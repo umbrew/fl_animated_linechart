@@ -8,8 +8,8 @@ import 'package:fl_animated_linechart/common/animated_path_util.dart';
 import 'package:fl_animated_linechart/common/pair.dart';
 import 'package:fl_animated_linechart/common/text_direction_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:path_drawing/path_drawing.dart';
 
 typedef TapText = String Function(String prefix, double y, String unit);
 
@@ -19,6 +19,7 @@ class AnimatedLineChart extends StatefulWidget {
   final TextStyle? textStyle;
   final Color toolTipColor;
   final Color gridColor;
+  final List<Legend>? legends;
 
   const AnimatedLineChart(
     this.chart, {
@@ -27,6 +28,7 @@ class AnimatedLineChart extends StatefulWidget {
     this.textStyle,
     required this.gridColor,
     required this.toolTipColor,
+    this.legends,
   }) : super(key: key);
 
   @override
@@ -66,14 +68,12 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
         builder: (BuildContext context, BoxConstraints constraints) {
       widget.chart.initialize(
           constraints.maxWidth, constraints.maxHeight, widget.textStyle);
-      return _GestureWrapper(
-        widget.chart,
-        _animation,
-        tapText: widget.tapText,
-        gridColor: widget.gridColor,
-        textStyle: widget.textStyle,
-        toolTipColor: widget.toolTipColor,
-      );
+      return _GestureWrapper(widget.chart, _animation,
+          tapText: widget.tapText,
+          gridColor: widget.gridColor,
+          textStyle: widget.textStyle,
+          toolTipColor: widget.toolTipColor,
+          legends: widget.legends);
     });
   }
 }
@@ -86,13 +86,15 @@ class _GestureWrapper extends StatefulWidget {
   final TextStyle? textStyle;
   final Color? toolTipColor;
   final Color? gridColor;
+  final List<Legend>? legends;
 
   const _GestureWrapper(this._chart, this._animation,
       {Key? key,
       this.tapText,
       this.gridColor,
       this.toolTipColor,
-      this.textStyle})
+      this.textStyle,
+      this.legends})
       : super(key: key);
 
   @override
@@ -115,6 +117,7 @@ class _GestureWrapperState extends State<_GestureWrapper> {
         gridColor: widget.gridColor,
         style: widget.textStyle,
         toolTipColor: widget.toolTipColor,
+        legends: widget.legends,
       ),
       onTapDown: (tap) {
         _horizontalDragActive = true;
@@ -152,6 +155,7 @@ class _AnimatedChart extends AnimatedWidget {
   final TextStyle? style;
   final Color? gridColor;
   final Color? toolTipColor;
+  final List<Legend>? legends;
 
   _AnimatedChart(
     this._chart,
@@ -163,6 +167,7 @@ class _AnimatedChart extends AnimatedWidget {
     this.style,
     this.gridColor,
     this.toolTipColor,
+    this.legends,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -170,9 +175,17 @@ class _AnimatedChart extends AnimatedWidget {
     Animation animation = listenable as Animation;
 
     return CustomPaint(
-      painter: ChartPainter(animation.value, _chart, _horizontalDragActive,
-          _horizontalDragPosition, style,
-          tapText: tapText, gridColor: gridColor!, toolTipColor: toolTipColor!),
+      painter: ChartPainter(
+        animation.value,
+        _chart,
+        _horizontalDragActive,
+        _horizontalDragPosition,
+        style,
+        tapText: tapText,
+        gridColor: gridColor!,
+        toolTipColor: toolTipColor!,
+        legends: legends,
+      ),
     );
   }
 }
@@ -201,6 +214,8 @@ class ChartPainter extends CustomPainter {
   final bool _horizontalDragActive;
   final double _horizontalDragPosition;
 
+  final List<Legend>? legends;
+
   TapText? tapText;
   final TextStyle? style;
 
@@ -216,6 +231,7 @@ class ChartPainter extends CustomPainter {
     this.tapText,
     required Color gridColor,
     required Color toolTipColor,
+    this.legends,
   }) {
     tapText = tapText ?? _defaultTapText;
     _tooltipPainter.color = toolTipColor;
@@ -229,6 +245,10 @@ class ChartPainter extends CustomPainter {
     _drawUnits(canvas, size, style);
     _drawLines(size, canvas);
     _drawAxisValues(canvas, size);
+
+    if (legends != null && legends!.isNotEmpty) {
+      _drawLegends(canvas, size);
+    }
 
     if (_horizontalDragActive) {
       _drawHighlights(
@@ -270,8 +290,12 @@ class ChartPainter extends CustomPainter {
     });
 
     highlights.forEach((highlight) {
-      canvas.drawCircle(Offset(highlight.chartPoint.x, highlight.chartPoint.y),
-          5, _linePainter);
+      if (_chart.lines[index].isThreshold != true) {
+        canvas.drawCircle(
+            Offset(highlight.chartPoint.x, highlight.chartPoint.y),
+            5,
+            _linePainter);
+      }
 
       String prefix = '';
 
@@ -300,7 +324,12 @@ class ChartPainter extends CustomPainter {
         maxWidth = tp.width;
       }
 
-      textPainters.add(tp);
+      if (_chart.lines[index].isThreshold !=
+          true) // do not show threshold values in highlight box
+      {
+        textPainters.add(tp);
+      }
+
       index++;
     });
 
@@ -387,13 +416,24 @@ class ChartPainter extends CustomPainter {
       } else {
         path = _chart.getPathCache(index);
 
-        if (drawCircles) {
+        if (drawCircles && chartLine.isThreshold != true) {
           points.forEach((p) => canvas.drawCircle(
               Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter));
         }
       }
-
-      canvas.drawPath(path!, _linePainter);
+      if (chartLine.isThreshold == true) {
+        canvas.drawPath(
+            dashPath(
+              path!,
+              dashArray: CircularIntervalList<double>(<double>[15.0, 5.0]),
+            ),
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..color = _linePainter.color
+              ..strokeWidth = 1);
+      } else {
+        canvas.drawPath(path!, _linePainter);
+      }
 
       if (_chart is AreaLineChart) {
         AreaLineChart areaLineChart = _chart as AreaLineChart;
@@ -415,6 +455,7 @@ class ChartPainter extends CustomPainter {
         }
 
         Path areaPathCache = areaLineChart.getAreaPathCache(index)!;
+
         canvas.drawPath(areaPathCache, _fillPainter);
       }
 
@@ -480,8 +521,115 @@ class ChartPainter extends CustomPainter {
     canvas.restore();
   }
 
+  void _drawLegends(Canvas canvas, Size size) {
+    final textStyle = TextStyle(
+      color: style?.color,
+      fontSize: 12,
+      overflow: TextOverflow.clip,
+    );
+    final textSpan = TextSpan(
+      text: legends![0].title,
+      style: textStyle,
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textAlign: TextAlign.left,
+      textDirection: TextDirectionHelper.getDirection(),
+    );
+
+    final iconPainter = TextPainter(
+      textAlign: TextAlign.left,
+      textDirection: TextDirectionHelper.getDirection(),
+    );
+
+    if (legends![0].icon != null) {
+      iconPainter.text = TextSpan(
+        text: String.fromCharCode(legends![0].icon!.icon!.codePoint),
+        style: TextStyle(
+            fontSize: 20.0,
+            fontFamily: legends![0].icon!.icon!.fontFamily,
+            color: legends![0].color),
+      );
+      iconPainter.layout();
+    }
+
+    textPainter.layout(
+      minWidth: 0,
+      maxWidth: 120,
+    );
+
+    final warningTextSpan = TextSpan(
+      text: legends![1].title,
+      style: textStyle,
+    );
+    final warningTextPainter = TextPainter(
+      text: warningTextSpan,
+      textAlign: TextAlign.right,
+      textDirection: TextDirectionHelper.getDirection(),
+    );
+
+    final warningIconPainter = TextPainter(
+      textAlign: TextAlign.right,
+      textDirection: TextDirectionHelper.getDirection(),
+    );
+    if (legends![1].icon != null) {
+      warningIconPainter.text = TextSpan(
+        text: String.fromCharCode(legends![1].icon!.icon!.codePoint),
+        style: TextStyle(
+            fontSize: 20.0,
+            fontFamily: legends![1].icon!.icon!.fontFamily,
+            color: legends![1].color),
+      );
+
+      warningIconPainter.layout();
+    }
+    warningTextPainter.layout(
+      minWidth: 0,
+      maxWidth: 120,
+    );
+
+    double width = size.width;
+    final offset = Offset(width * 0.25, size.height - 8);
+    if (legends![0].icon == null) {
+      canvas.drawLine(
+          Offset(width * 0.20, size.height),
+          Offset(width * 0.23, size.height),
+          Paint()
+            ..color = legends![0].color ?? Colors.black
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 3);
+    } else {
+      iconPainter.paint(canvas, Offset(width * 0.20 - 3, size.height - 12));
+    }
+
+    textPainter.paint(canvas, offset);
+
+    warningTextPainter.paint(canvas, Offset(width * 0.65, size.height - 8));
+
+    if (legends![1].icon == null) {
+      canvas.drawLine(
+          Offset(width * 0.60, size.height),
+          Offset(width * 0.63, size.height),
+          Paint()
+            ..color = legends![1].color ?? Colors.black
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 3);
+    } else {
+      warningIconPainter.paint(
+          canvas, Offset(width * 0.60 - 3, size.height - 12));
+    }
+  }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
+}
+
+class Legend {
+  final String? title;
+  final Color? color;
+  final Icon? icon;
+
+  Legend({this.title, this.color, this.icon});
 }

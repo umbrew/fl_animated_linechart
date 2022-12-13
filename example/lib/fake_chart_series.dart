@@ -61,10 +61,55 @@ class FakeChartSeries {
     return data;
   }
 
+  Map<DateTime, double> createLine2_3() {
+    Map<DateTime, double> data = {};
+
+    data[DateTime.now().subtract(Duration(minutes: 80))] = 10.0;
+    data[DateTime.now().subtract(Duration(minutes: 70))] = 15.0;
+    data[DateTime.now().subtract(Duration(minutes: 60))] = 15.0;
+    data[DateTime.now().subtract(Duration(minutes: 50))] = 25.0;
+    data[DateTime.now().subtract(Duration(minutes: 40))] = 13.0;
+    data[DateTime.now().subtract(Duration(minutes: 30))] = 24.0;
+    data[DateTime.now().subtract(Duration(minutes: 22))] = 39.0;
+    data[DateTime.now().subtract(Duration(minutes: 20))] = 29.0;
+    data[DateTime.now().subtract(Duration(minutes: 15))] = 27.0;
+    data[DateTime.now().subtract(Duration(minutes: 12))] = 9.0;
+    data[DateTime.now().subtract(Duration(minutes: 5))] = 35.0;
+    return data;
+  }
+
+  Map<DateTime, double> createUpperCriticalLine() {
+    Map<DateTime, double> data = {};
+    data[DateTime.now().subtract(Duration(minutes: 80))] = 119.0;
+    data[DateTime.now().subtract(Duration(minutes: 5))] = 119.0;
+    return data;
+  }
+
+  Map<DateTime, double> createLowerCriticalLine() {
+    Map<DateTime, double> data = {};
+    data[DateTime.now().subtract(Duration(minutes: 80))] = -10.0;
+    data[DateTime.now().subtract(Duration(minutes: 5))] = -10.0;
+    return data;
+  }
+
+  Map<DateTime, double> createUpperWarningLine() {
+    Map<DateTime, double> data = {};
+    data[DateTime.now().subtract(Duration(minutes: 80))] = 100.0;
+    data[DateTime.now().subtract(Duration(minutes: 5))] = 100.0;
+    return data;
+  }
+
+  Map<DateTime, double> createLowerWarningLine() {
+    Map<DateTime, double> data = {};
+    data[DateTime.now().subtract(Duration(minutes: 80))] = -1.0;
+    data[DateTime.now().subtract(Duration(minutes: 5))] = -1.0;
+    return data;
+  }
+
   Map<DateTime, double> createLine3() {
     Map<DateTime, double> data = {};
     data[DateTime.now().subtract(Duration(days: 6))] = 1100.0;
-    data[DateTime.now().subtract(Duration(days: 4))] = 2233.0;
+    data[DateTime.now().subtract(Duration(days: 5))] = 2233.0;
     data[DateTime.now().subtract(Duration(days: 4))] = 3744.0;
     data[DateTime.now().subtract(Duration(days: 3))] = 3100.0;
     data[DateTime.now().subtract(Duration(days: 2))] = 2900.0;

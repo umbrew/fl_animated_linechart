@@ -8,10 +8,10 @@ import '../testHelpers/widget_test_helper.dart';
 
 void main() {
   testWidgets('Test animations runs and disposes', (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
-    Map<DateTime, double> line = Map();
+    Map<DateTime, double> line = {};
     line[start] = 1.2;
     line[start.add(Duration(minutes: 5))] = 0.5;
     line[start.add(Duration(minutes: 10))] = 1.7;
