@@ -290,7 +290,7 @@ class ChartPainter extends CustomPainter {
     });
 
     highlights.forEach((highlight) {
-      if (_chart.lines[index].isThreshold != true) {
+      if (_chart.lines[index].isMarkerLine != true) {
         canvas.drawCircle(
             Offset(highlight.chartPoint.x, highlight.chartPoint.y),
             5,
@@ -324,7 +324,7 @@ class ChartPainter extends CustomPainter {
         maxWidth = tp.width;
       }
 
-      if (_chart.lines[index].isThreshold !=
+      if (_chart.lines[index].isMarkerLine !=
           true) // do not show threshold values in highlight box
       {
         textPainters.add(tp);
@@ -416,12 +416,12 @@ class ChartPainter extends CustomPainter {
       } else {
         path = _chart.getPathCache(index);
 
-        if (drawCircles && chartLine.isThreshold != true) {
+        if (drawCircles && chartLine.isMarkerLine != true) {
           points.forEach((p) => canvas.drawCircle(
               Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter));
         }
       }
-      if (chartLine.isThreshold == true) {
+      if (chartLine.isMarkerLine == true) {
         canvas.drawPath(
             dashPath(
               path!,

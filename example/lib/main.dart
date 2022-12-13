@@ -85,10 +85,10 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
         'C',
         'C',
       ], tapTextFontWeight: FontWeight.w400);
-      chart.lines[1].isThreshold = true;
-      chart.lines[2].isThreshold = true;
-      chart.lines[3].isThreshold = true;
-      chart.lines[4].isThreshold = true;
+      chart.lines[1].isMarkerLine = true;
+      chart.lines[2].isMarkerLine = true;
+      chart.lines[3].isMarkerLine = true;
+      chart.lines[4].isMarkerLine = true;
     }
     final ButtonStyle flatButtonStyle = TextButton.styleFrom(
       shape: RoundedRectangleBorder(
