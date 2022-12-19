@@ -28,6 +28,9 @@ class DateTimeSeriesConverter {
 
     input.forEach((dateTime, value) {
       double x = dateTime.difference(from!).inSeconds.toDouble();
+      print(
+          '**** dateTime since epoch date series: ${dateTime.millisecondsSinceEpoch}');
+
       double y = value;
       result.add(DateTimeChartPoint(x, y, dateTime));
     });

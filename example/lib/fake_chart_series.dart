@@ -101,8 +101,8 @@ class FakeChartSeries {
 
   Map<DateTime, double> createLowerWarningLine() {
     Map<DateTime, double> data = {};
-    data[DateTime.now().subtract(Duration(minutes: 80))] = -1.0;
-    data[DateTime.now().subtract(Duration(minutes: 5))] = -1.0;
+    data[DateTime.now().subtract(Duration(minutes: 80))] = 10.0;
+    data[DateTime.now().subtract(Duration(minutes: 5))] = 10.0;
     return data;
   }
 

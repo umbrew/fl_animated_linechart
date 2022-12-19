@@ -3,7 +3,6 @@ import 'package:fl_animated_linechart/chart/area_line_chart.dart';
 import 'package:fl_animated_linechart/common/pair.dart';
 import 'package:fl_animated_linechart/fl_animated_linechart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 void main() => runApp(MyApp());
 
@@ -96,10 +95,6 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
           borderRadius: BorderRadius.all(Radius.circular(3))),
     );
 
-    var brightness =
-        SchedulerBinding.instance.platformDispatcher.platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -181,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                   key: UniqueKey(),
                   gridColor: Colors.black54,
                   textStyle: TextStyle(fontSize: 10, color: Colors.black54),
-                  toolTipColor: isDarkMode ? Colors.white : Colors.grey,
+                  toolTipColor: Colors.white,
                   legends: chartIndex == 3
                       ? [
                           Legend(
@@ -194,6 +189,18 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                               color: Colors.yellow)
                         ]
                       : null,
+                  showMarkerLines: chartIndex == 3 ? true : null,
+                  verticalMarker: chartIndex == 3
+                      ? [
+                          DateTime.now()
+                              .subtract(Duration(minutes: 30))
+                              .toLocal(),
+                          DateTime.now()
+                              .toLocal()
+                              .subtract(Duration(minutes: 20))
+                        ]
+                      : null,
+                  verticalMarkerColor: chartIndex == 3 ? Colors.red : null,
                 ), //Unique key to force animations
               )),
               SizedBox(width: 200, height: 50, child: Text('')),
