@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:fl_animated_linechart/chart/area_line_chart.dart';
 import 'package:fl_animated_linechart/chart/datetime_chart_point.dart';
@@ -25,6 +24,7 @@ class AnimatedLineChart extends StatefulWidget {
   final bool? showMarkerLines;
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
+  final List<Icon>? verticalMarkerIcon;
 
   const AnimatedLineChart(
     this.chart, {
@@ -37,6 +37,7 @@ class AnimatedLineChart extends StatefulWidget {
     this.showMarkerLines,
     this.verticalMarker,
     this.verticalMarkerColor,
+    this.verticalMarkerIcon,
   }) : super(key: key);
 
   @override
@@ -87,6 +88,7 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
         showMarkerLines: widget.showMarkerLines,
         verticalMarker: widget.verticalMarker,
         verticalMarkerColor: widget.verticalMarkerColor,
+        verticalMarkerIcon: widget.verticalMarkerIcon,
       );
     });
   }
@@ -104,6 +106,7 @@ class _GestureWrapper extends StatefulWidget {
   final bool? showMarkerLines;
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
+  final List<Icon>? verticalMarkerIcon;
 
   const _GestureWrapper(
     this._chart,
@@ -117,6 +120,7 @@ class _GestureWrapper extends StatefulWidget {
     this.showMarkerLines,
     this.verticalMarker,
     this.verticalMarkerColor,
+    this.verticalMarkerIcon,
   }) : super(key: key);
 
   @override
@@ -143,6 +147,7 @@ class _GestureWrapperState extends State<_GestureWrapper> {
         showMarkerLines: widget.showMarkerLines,
         verticalMarker: widget.verticalMarker,
         verticalMarkerColor: widget.verticalMarkerColor,
+        verticalMarkerIcon: widget.verticalMarkerIcon,
       ),
       onTapDown: (tap) {
         _horizontalDragActive = true;
@@ -184,6 +189,7 @@ class _AnimatedChart extends AnimatedWidget {
   final bool? showMarkerLines;
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
+  final List<Icon>? verticalMarkerIcon;
 
   _AnimatedChart(
     this._chart,
@@ -199,6 +205,7 @@ class _AnimatedChart extends AnimatedWidget {
     this.showMarkerLines,
     this.verticalMarker,
     this.verticalMarkerColor,
+    this.verticalMarkerIcon,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -219,6 +226,7 @@ class _AnimatedChart extends AnimatedWidget {
         showMarkerLines: showMarkerLines,
         verticalMarker: verticalMarker,
         verticalMarkerColor: verticalMarkerColor,
+        verticalMarkerIcon: verticalMarkerIcon,
       ),
     );
   }
@@ -252,6 +260,7 @@ class ChartPainter extends CustomPainter {
   final bool? showMarkerLines;
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
+  final List<Icon>? verticalMarkerIcon;
 
   TapText? tapText;
   final TextStyle? style;
@@ -272,6 +281,7 @@ class ChartPainter extends CustomPainter {
     this.showMarkerLines,
     this.verticalMarker,
     this.verticalMarkerColor,
+    this.verticalMarkerIcon,
   }) {
     tapText = tapText ?? _defaultTapText;
     _tooltipPainter.color = toolTipColor;
@@ -288,6 +298,10 @@ class ChartPainter extends CustomPainter {
 
     if (legends != null && legends!.isNotEmpty) {
       _drawLegends(canvas, size);
+    }
+
+    if (verticalMarker != null) {
+      _drawVerticalMarkers(size, canvas);
     }
 
     if (_horizontalDragActive) {
@@ -452,24 +466,15 @@ class ChartPainter extends CustomPainter {
     // Set the minimum and maximum DateTime values for the x-axis
     final minX = _chart.fromTo.min!;
     final maxX = _chart.fromTo.max!;
-    double _xOffset = _chart.minX * _chart.xScale!;
 
     // Calculate the range of the x-axis
     final xRange = maxX.millisecondsSinceEpoch - minX.millisecondsSinceEpoch;
 
-    print('**** xRange: $xRange');
-
-    // Calculate the pixel value for the xValue
-    final xPixel = ((xValue.millisecondsSinceEpoch + 45001) -
-            minX.millisecondsSinceEpoch) *
-        size.width /
-        xRange;
-
-    /* double pixelX = (x.millisecondsSinceEpoch - minX.millisecondsSinceEpoch) / (maxX.millisecondsSinceEpoch - minX.millisecondsSinceEpoch) * size.width */
-
-    double x = xValue.difference(minX).inSeconds.toDouble();
-    print('***** x from method: $x');
-    print('***** xValue since epoch: ${xValue.millisecondsSinceEpoch}');
+    // Calculate the pixel vaule of the xValue
+    double xPixel =
+        (xValue.millisecondsSinceEpoch - minX.millisecondsSinceEpoch) *
+            size.width /
+            xRange;
     return xPixel.roundToDouble();
   }
 
@@ -492,57 +497,13 @@ class ChartPainter extends CustomPainter {
 
         if (drawCircles && chartLine.isMarkerLine != true) {
           points.forEach((p) {
-            print('***** x = ${p.chartPoint.x}');
             canvas.drawCircle(
                 Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter);
           });
         }
       }
 
-      if (verticalMarker != null) {
-        // Set the paint style for the line
-        final verticalMarkerPaint = Paint()
-          ..color = verticalMarkerColor ?? Colors.blueAccent
-          ..strokeWidth = 2;
-
-        // Convert the DateTime value to a pixel value on the x-axis
-        final firstVerticalLine = xValueToPixel(verticalMarker!.first, size);
-
-        print('**** firstVerticalLine: $firstVerticalLine');
-
-        final secondVerticalLine = xValueToPixel(verticalMarker!.last, size);
-
-        print('**** secondVerticalLine: $secondVerticalLine');
-
-        // Draw the line
-        canvas.drawLine(
-            Offset(firstVerticalLine, 0),
-            Offset(firstVerticalLine, size.height - LineChart.axisOffsetPX),
-            verticalMarkerPaint);
-
-        canvas.drawLine(
-            Offset(secondVerticalLine, 0),
-            Offset(secondVerticalLine, size.height - LineChart.axisOffsetPX),
-            Paint()
-              ..color = Colors.grey
-              ..strokeWidth = 1);
-
-        Path filledPath = Path();
-
-        filledPath.moveTo(firstVerticalLine, 0);
-        filledPath.lineTo(secondVerticalLine, 0);
-        filledPath.lineTo(
-            secondVerticalLine, size.height - LineChart.axisOffsetPX);
-        filledPath.lineTo(
-            firstVerticalLine, size.height - LineChart.axisOffsetPX);
-
-        canvas.drawPath(
-          filledPath,
-          Paint()..color = verticalMarkerPaint.color.withOpacity(0.1),
-        );
-      }
-
-      if (showMarkerLines == true && chartLine.isMarkerLine == true) {
+      if (chartLine.isMarkerLine == true && showMarkerLines == true) {
         canvas.drawPath(
             dashPath(
               path!,
@@ -582,6 +543,129 @@ class ChartPainter extends CustomPainter {
 
       index++;
     });
+  }
+
+  void _drawVerticalMarkers(Size size, Canvas canvas) {
+    assert(verticalMarker!.length <= 2);
+    // Convert the DateTime value to a pixel value on the x-axis
+    final firstVerticalMarkerXValue =
+        xValueToPixel(verticalMarker!.first, size);
+    final closestPoint =
+        _chart.getClosetHighlightPoints(firstVerticalMarkerXValue);
+
+    final firstVerticalMarker = closestPoint.first.chartPoint.x;
+
+    // Set the paint style for the line
+    final verticalMarkerPaint = Paint()
+      ..color = verticalMarkerColor ?? Colors.blueAccent
+      ..strokeWidth = 2;
+
+    // Draw the line
+    canvas.drawLine(
+        Offset(firstVerticalMarker, 0),
+        Offset(firstVerticalMarker, size.height - LineChart.axisOffsetPX),
+        verticalMarkerPaint);
+
+    final lastVerticalMarkerXValue = xValueToPixel(verticalMarker!.last, size) +
+        6.5; // To distingush when differece between first and last is very small
+    final closestPointLastVerticalMarker =
+        _chart.getClosetHighlightPoints(lastVerticalMarkerXValue);
+
+    final lastVerticalMarker =
+        closestPointLastVerticalMarker.first.chartPoint.x;
+
+    // If there are two x values defined, draw a shaded area between the two vertical lines
+    if (verticalMarker?.last != null) {
+      canvas.drawLine(
+          Offset(lastVerticalMarker, 0),
+          Offset(lastVerticalMarker, size.height - LineChart.axisOffsetPX),
+          Paint()
+            ..color = Colors.grey
+            ..strokeWidth = 1);
+
+      Path filledPath = Path();
+
+      filledPath.moveTo(firstVerticalMarker, 0);
+      filledPath.lineTo(lastVerticalMarker, 0);
+      filledPath.lineTo(
+          lastVerticalMarker, size.height - LineChart.axisOffsetPX);
+      filledPath.lineTo(
+          firstVerticalMarker, size.height - LineChart.axisOffsetPX);
+
+      canvas.drawPath(
+        filledPath,
+        Paint()..color = verticalMarkerPaint.color.withOpacity(0.3),
+      );
+    }
+
+    if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
+      assert(verticalMarkerIcon!.length <= 2);
+      TextPainter firstIconTp = TextPainter(
+        textDirection: TextDirectionHelper.getDirection(),
+      );
+
+      firstIconTp.text = TextSpan(
+        text: String.fromCharCode(verticalMarkerIcon!.first.icon!.codePoint),
+        style: TextStyle(
+          fontSize: 17.0,
+          fontFamily: verticalMarkerIcon?.first.icon!.fontFamily,
+          color: verticalMarkerIcon?.first.color ?? _gridPainter.color,
+        ),
+      );
+
+      firstIconTp.layout();
+
+      // Setting the background color of the icon
+      canvas.drawCircle(
+          Offset(
+            firstVerticalMarker,
+            closestPoint.first.chartPoint.y,
+          ),
+          6,
+          Paint()..color = Colors.white);
+
+      firstIconTp.paint(
+        canvas,
+        Offset(
+          firstVerticalMarker - 9,
+          closestPoint.first.chartPoint.y - 9,
+        ),
+      );
+    }
+
+    if (verticalMarkerIcon?.length == 2) {
+      TextPainter lastIconTp = TextPainter(
+        textDirection: TextDirectionHelper.getDirection(),
+      );
+
+      lastIconTp.text = TextSpan(
+        text: String.fromCharCode(verticalMarkerIcon!.last.icon!.codePoint),
+        style: TextStyle(
+          fontSize: 17.0,
+          fontFamily: verticalMarkerIcon?.last.icon!.fontFamily,
+          color: verticalMarkerIcon?.last.color ?? _gridPainter.color,
+        ),
+      );
+
+      lastIconTp.layout();
+
+      // Setting the background color of the icon
+      canvas.drawCircle(
+          Offset(
+            lastVerticalMarker,
+            closestPointLastVerticalMarker.first.chartPoint.y,
+          ),
+          6,
+          Paint()..color = Colors.white);
+
+      lastIconTp.paint(
+        canvas,
+        Offset(
+          lastVerticalMarker - 9,
+          closestPointLastVerticalMarker.first.chartPoint.y - 9,
+        ),
+      );
+    }
   }
 
   void _drawUnits(Canvas canvas, Size size, TextStyle? style) {

@@ -70,6 +70,7 @@ class FakeChartSeries {
     data[DateTime.now().subtract(Duration(minutes: 50))] = 25.0;
     data[DateTime.now().subtract(Duration(minutes: 40))] = 13.0;
     data[DateTime.now().subtract(Duration(minutes: 30))] = 24.0;
+    data[DateTime.now().subtract(Duration(minutes: 23))] = 37.0;
     data[DateTime.now().subtract(Duration(minutes: 22))] = 39.0;
     data[DateTime.now().subtract(Duration(minutes: 20))] = 29.0;
     data[DateTime.now().subtract(Duration(minutes: 15))] = 27.0;

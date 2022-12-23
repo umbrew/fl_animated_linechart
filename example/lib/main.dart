@@ -201,6 +201,16 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                         ]
                       : null,
                   verticalMarkerColor: chartIndex == 3 ? Colors.red : null,
+                  verticalMarkerIcon: [
+                    Icon(
+                      Icons.cancel_rounded,
+                      color: Colors.red,
+                    ),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: Colors.green,
+                    ),
+                  ],
                 ), //Unique key to force animations
               )),
               SizedBox(width: 200, height: 50, child: Text('')),
