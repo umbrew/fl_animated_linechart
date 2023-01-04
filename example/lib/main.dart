@@ -179,14 +179,8 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                   toolTipColor: Colors.white,
                   legends: chartIndex == 3
                       ? [
-                          Legend(
-                              title:
-                                  'Critical ${line3.values.first}, ${line6.values.first}',
-                              color: Colors.red),
-                          Legend(
-                              title:
-                                  'Warning ${line4.values.first}, ${line5.values.first}',
-                              color: Colors.yellow)
+                          Legend(title: 'Critical', color: Colors.red),
+                          Legend(title: 'Warning', color: Colors.yellow),
                         ]
                       : null,
                   showMarkerLines: chartIndex == 3 ? true : null,
