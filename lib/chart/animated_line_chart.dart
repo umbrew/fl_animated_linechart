@@ -25,6 +25,7 @@ class AnimatedLineChart extends StatefulWidget {
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
+  final Color? iconBackgroundColor;
 
   const AnimatedLineChart(
     this.chart, {
@@ -38,6 +39,7 @@ class AnimatedLineChart extends StatefulWidget {
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
+    this.iconBackgroundColor,
   }) : super(key: key);
 
   @override
@@ -73,24 +75,47 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      widget.chart.initialize(
-          constraints.maxWidth, constraints.maxHeight, widget.textStyle);
-      return _GestureWrapper(
-        widget.chart,
-        _animation,
-        tapText: widget.tapText,
-        gridColor: widget.gridColor,
-        textStyle: widget.textStyle,
-        toolTipColor: widget.toolTipColor,
-        legends: widget.legends,
-        showMarkerLines: widget.showMarkerLines,
-        verticalMarker: widget.verticalMarker,
-        verticalMarkerColor: widget.verticalMarkerColor,
-        verticalMarkerIcon: widget.verticalMarkerIcon,
-      );
-    });
+    return Column(
+      children: [
+        Expanded(
+          child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            widget.chart.initialize(
+                constraints.maxWidth, constraints.maxHeight, widget.textStyle);
+            return _GestureWrapper(
+              widget.chart,
+              _animation,
+              tapText: widget.tapText,
+              gridColor: widget.gridColor,
+              textStyle: widget.textStyle,
+              toolTipColor: widget.toolTipColor,
+              legends: widget.legends,
+              showMarkerLines: widget.showMarkerLines,
+              verticalMarker: widget.verticalMarker,
+              verticalMarkerColor: widget.verticalMarkerColor,
+              verticalMarkerIcon: widget.verticalMarkerIcon,
+              iconBackgroundColor: widget.iconBackgroundColor,
+            );
+          }),
+        ),
+        widget.legends != null
+            ? Wrap(
+                direction: Axis.horizontal,
+                children: widget.legends!.map((item) {
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            right: 4.0, top: 5, left: 4.0),
+                        child: item,
+                      ),
+                    ],
+                  );
+                }).toList())
+            : Container(),
+      ],
+    );
   }
 }
 
@@ -107,6 +132,7 @@ class _GestureWrapper extends StatefulWidget {
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
+  final Color? iconBackgroundColor;
 
   const _GestureWrapper(
     this._chart,
@@ -121,6 +147,7 @@ class _GestureWrapper extends StatefulWidget {
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
+    this.iconBackgroundColor,
   }) : super(key: key);
 
   @override
@@ -148,6 +175,7 @@ class _GestureWrapperState extends State<_GestureWrapper> {
         verticalMarker: widget.verticalMarker,
         verticalMarkerColor: widget.verticalMarkerColor,
         verticalMarkerIcon: widget.verticalMarkerIcon,
+        iconBackgroundColor: widget.iconBackgroundColor,
       ),
       onTapDown: (tap) {
         _horizontalDragActive = true;
@@ -190,6 +218,7 @@ class _AnimatedChart extends AnimatedWidget {
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
+  final Color? iconBackgroundColor;
 
   _AnimatedChart(
     this._chart,
@@ -206,6 +235,7 @@ class _AnimatedChart extends AnimatedWidget {
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
+    this.iconBackgroundColor,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -227,7 +257,9 @@ class _AnimatedChart extends AnimatedWidget {
         verticalMarker: verticalMarker,
         verticalMarkerColor: verticalMarkerColor,
         verticalMarkerIcon: verticalMarkerIcon,
+        iconBackgroundColor: iconBackgroundColor,
       ),
+      child: Container(),
     );
   }
 }
@@ -261,6 +293,7 @@ class ChartPainter extends CustomPainter {
   final List<DateTime>? verticalMarker;
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
+  final Color? iconBackgroundColor;
 
   TapText? tapText;
   final TextStyle? style;
@@ -282,6 +315,7 @@ class ChartPainter extends CustomPainter {
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
+    this.iconBackgroundColor,
   }) {
     tapText = tapText ?? _defaultTapText;
     _tooltipPainter.color = toolTipColor;
@@ -295,10 +329,6 @@ class ChartPainter extends CustomPainter {
     _drawUnits(canvas, size, style);
     _drawLines(size, canvas);
     _drawAxisValues(canvas, size);
-
-    if (legends != null && legends!.isNotEmpty) {
-      _drawLegends(canvas, size);
-    }
 
     if (verticalMarker != null) {
       _drawVerticalMarkers(size, canvas);
@@ -550,6 +580,7 @@ class ChartPainter extends CustomPainter {
     // Convert the DateTime value to a pixel value on the x-axis
     final firstVerticalMarkerXValue =
         xValueToPixel(verticalMarker!.first, size);
+
     final closestPoint =
         _chart.getClosetHighlightPoints(firstVerticalMarkerXValue);
 
@@ -566,16 +597,18 @@ class ChartPainter extends CustomPainter {
         Offset(firstVerticalMarker, size.height - LineChart.axisOffsetPX),
         verticalMarkerPaint);
 
-    final lastVerticalMarkerXValue = xValueToPixel(verticalMarker!.last, size) +
-        6.5; // To distingush when differece between first and last is very small
-    final closestPointLastVerticalMarker =
-        _chart.getClosetHighlightPoints(lastVerticalMarkerXValue);
-
-    final lastVerticalMarker =
-        closestPointLastVerticalMarker.first.chartPoint.x;
-
     // If there are two x values defined, draw a shaded area between the two vertical lines
     if (verticalMarker?.last != null) {
+      final lastVerticalMarkerXValue = xValueToPixel(
+              verticalMarker!.last, size) +
+          6.5; // To distingush when differece between first and last is very small
+
+      final closestPointLastVerticalMarker =
+          _chart.getClosetHighlightPoints(lastVerticalMarkerXValue);
+
+      final lastVerticalMarker =
+          closestPointLastVerticalMarker.first.chartPoint.x;
+
       canvas.drawLine(
           Offset(lastVerticalMarker, 0),
           Offset(lastVerticalMarker, size.height - LineChart.axisOffsetPX),
@@ -596,6 +629,42 @@ class ChartPainter extends CustomPainter {
         filledPath,
         Paint()..color = verticalMarkerPaint.color.withOpacity(0.3),
       );
+
+      if (verticalMarkerIcon?.length == 2) {
+        TextPainter lastIconTp = TextPainter(
+          textDirection: TextDirectionHelper.getDirection(),
+        );
+
+        lastIconTp.text = TextSpan(
+          text: String.fromCharCode(verticalMarkerIcon!.last.icon!.codePoint),
+          style: TextStyle(
+            fontSize: 17.0,
+            fontFamily: verticalMarkerIcon?.last.icon!.fontFamily,
+            color: verticalMarkerIcon?.last.color ?? _gridPainter.color,
+          ),
+        );
+
+        lastIconTp.layout();
+
+        if (iconBackgroundColor != null) {
+          // Setting the background color of the icon
+          canvas.drawCircle(
+              Offset(
+                lastVerticalMarker,
+                closestPointLastVerticalMarker.first.chartPoint.y,
+              ),
+              4.5,
+              Paint()..color = iconBackgroundColor ?? Colors.white);
+        }
+
+        lastIconTp.paint(
+          canvas,
+          Offset(
+            lastVerticalMarker - 9,
+            closestPointLastVerticalMarker.first.chartPoint.y - 9,
+          ),
+        );
+      }
     }
 
     if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
@@ -615,54 +684,22 @@ class ChartPainter extends CustomPainter {
 
       firstIconTp.layout();
 
-      // Setting the background color of the icon
-      canvas.drawCircle(
-          Offset(
-            firstVerticalMarker,
-            closestPoint.first.chartPoint.y,
-          ),
-          6,
-          Paint()..color = Colors.white);
+      if (iconBackgroundColor != null) {
+        // Setting the background color of the icon
+        canvas.drawCircle(
+            Offset(
+              firstVerticalMarker,
+              closestPoint.first.chartPoint.y,
+            ),
+            4.5,
+            Paint()..color = iconBackgroundColor ?? Colors.white);
+      }
 
       firstIconTp.paint(
         canvas,
         Offset(
           firstVerticalMarker - 9,
           closestPoint.first.chartPoint.y - 9,
-        ),
-      );
-    }
-
-    if (verticalMarkerIcon?.length == 2) {
-      TextPainter lastIconTp = TextPainter(
-        textDirection: TextDirectionHelper.getDirection(),
-      );
-
-      lastIconTp.text = TextSpan(
-        text: String.fromCharCode(verticalMarkerIcon!.last.icon!.codePoint),
-        style: TextStyle(
-          fontSize: 17.0,
-          fontFamily: verticalMarkerIcon?.last.icon!.fontFamily,
-          color: verticalMarkerIcon?.last.color ?? _gridPainter.color,
-        ),
-      );
-
-      lastIconTp.layout();
-
-      // Setting the background color of the icon
-      canvas.drawCircle(
-          Offset(
-            lastVerticalMarker,
-            closestPointLastVerticalMarker.first.chartPoint.y,
-          ),
-          6,
-          Paint()..color = Colors.white);
-
-      lastIconTp.paint(
-        canvas,
-        Offset(
-          lastVerticalMarker - 9,
-          closestPointLastVerticalMarker.first.chartPoint.y - 9,
         ),
       );
     }
@@ -727,115 +764,44 @@ class ChartPainter extends CustomPainter {
     canvas.restore();
   }
 
-  void _drawLegends(Canvas canvas, Size size) {
-    final textStyle = TextStyle(
-      color: style?.color,
-      fontSize: 12,
-      overflow: TextOverflow.clip,
-    );
-    final textSpan = TextSpan(
-      text: legends![0].title,
-      style: textStyle,
-    );
-    final textPainter = TextPainter(
-      text: textSpan,
-      textAlign: TextAlign.left,
-      textDirection: TextDirectionHelper.getDirection(),
-    );
-
-    final iconPainter = TextPainter(
-      textAlign: TextAlign.left,
-      textDirection: TextDirectionHelper.getDirection(),
-    );
-
-    if (legends![0].icon != null) {
-      iconPainter.text = TextSpan(
-        text: String.fromCharCode(legends![0].icon!.icon!.codePoint),
-        style: TextStyle(
-            fontSize: 20.0,
-            fontFamily: legends![0].icon!.icon!.fontFamily,
-            color: legends![0].color),
-      );
-      iconPainter.layout();
-    }
-
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: 120,
-    );
-
-    final warningTextSpan = TextSpan(
-      text: legends![1].title,
-      style: textStyle,
-    );
-    final warningTextPainter = TextPainter(
-      text: warningTextSpan,
-      textAlign: TextAlign.right,
-      textDirection: TextDirectionHelper.getDirection(),
-    );
-
-    final warningIconPainter = TextPainter(
-      textAlign: TextAlign.right,
-      textDirection: TextDirectionHelper.getDirection(),
-    );
-    if (legends![1].icon != null) {
-      warningIconPainter.text = TextSpan(
-        text: String.fromCharCode(legends![1].icon!.icon!.codePoint),
-        style: TextStyle(
-            fontSize: 20.0,
-            fontFamily: legends![1].icon!.icon!.fontFamily,
-            color: legends![1].color),
-      );
-
-      warningIconPainter.layout();
-    }
-    warningTextPainter.layout(
-      minWidth: 0,
-      maxWidth: 120,
-    );
-
-    double width = size.width;
-    final offset = Offset(width * 0.25, size.height - 8);
-    if (legends![0].icon == null) {
-      canvas.drawLine(
-          Offset(width * 0.20, size.height),
-          Offset(width * 0.23, size.height),
-          Paint()
-            ..color = legends![0].color ?? Colors.black
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 3);
-    } else {
-      iconPainter.paint(canvas, Offset(width * 0.20 - 3, size.height - 12));
-    }
-
-    textPainter.paint(canvas, offset);
-
-    warningTextPainter.paint(canvas, Offset(width * 0.65, size.height - 8));
-
-    if (legends![1].icon == null) {
-      canvas.drawLine(
-          Offset(width * 0.60, size.height),
-          Offset(width * 0.63, size.height),
-          Paint()
-            ..color = legends![1].color ?? Colors.black
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 3);
-    } else {
-      warningIconPainter.paint(
-          canvas, Offset(width * 0.60 - 3, size.height - 12));
-    }
-  }
-
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
 }
 
-class Legend {
+class Legend extends StatelessWidget {
   final String? title;
   final Color? color;
   final Icon? icon;
+  final TextStyle? style;
 
-  Legend({this.title, this.color, this.icon});
+  const Legend({this.title, this.color, this.icon, this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        icon != null
+            ? icon!
+            : Container(
+                height: 3,
+                width: 15,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+              ),
+        Text(
+          ' $title',
+          style: TextStyle(
+            color: style?.color,
+            fontSize: 12,
+            overflow: TextOverflow.clip,
+          ),
+        ),
+      ],
+    );
+  }
 }

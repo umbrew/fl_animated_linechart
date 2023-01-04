@@ -57,7 +57,7 @@ void main() {
 
   testWidgets('Test horizontal drag multiple series',
       (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -125,7 +125,7 @@ void main() {
 
   testWidgets('Test horizontal drag multiple series different unit',
       (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -192,7 +192,7 @@ void main() {
   });
 
   testWidgets('Test horizontal drag single serie', (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -250,7 +250,7 @@ void main() {
   });
 
   testWidgets('Test tooltip triggered by tap', (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -292,7 +292,7 @@ void main() {
   });
 
   testWidgets('serie with same values', (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -332,7 +332,7 @@ void main() {
   });
 
   testWidgets('area chart', (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -372,7 +372,7 @@ void main() {
   });
 
   testWidgets('area chart with gradient', (WidgetTester tester) async {
-    DateTime start = DateTime.now();
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
     Map<DateTime, double> line = Map();
@@ -550,6 +550,7 @@ void main() {
               color: Colors.green,
             )
           ],
+          iconBackgroundColor: Colors.white,
         ),
       ),
     );
@@ -561,5 +562,60 @@ void main() {
         find.byType(AnimatedLineChart),
         matchesGoldenFile(
             'animatedLineChartWithHorizontalAndVerticalMarkerLines.png'));
+  });
+
+  testWidgets('Test legends showing', (WidgetTester tester) async {
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
+
+    List<Map<DateTime, double>> series = [];
+    Map<DateTime, double> line = {};
+    line[start] = 1.2;
+    line[start.add(Duration(minutes: 5))] = 0.5;
+    line[start.add(Duration(minutes: 7))] = 1.7;
+    line[start.add(Duration(minutes: 10))] = 1;
+
+    series.add(line);
+
+    LineChart lineChart =
+        LineChart.fromDateTimeMaps(series, [Colors.pink], ['P']);
+
+    lineChart.initialize(
+      200,
+      100,
+      TextStyle(
+          color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
+    );
+
+    await tester.pumpWidget(
+      buildTestableWidget(
+        AnimatedLineChart(
+          lineChart,
+          gridColor: Colors.black54,
+          textStyle: TextStyle(fontSize: 10, color: Colors.black54),
+          toolTipColor: Colors.white,
+          legends: [
+            Legend(
+              title: 'Revenue',
+              icon: Icon(
+                Icons.money,
+                size: 15,
+              ),
+              style: TextStyle(fontSize: 10, color: Colors.black54),
+            ),
+            Legend(
+              title: 'Total',
+              color: Colors.pink,
+              style: TextStyle(fontSize: 10, color: Colors.black54),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(Duration(seconds: 1));
+    await tester.pump(Duration(seconds: 1));
+
+    await expectLater(find.byType(AnimatedLineChart),
+        matchesGoldenFile('animatedLineChartWithLegends.png'));
   });
 }
