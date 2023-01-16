@@ -50,6 +50,7 @@ Example code:
       ),
     );
 
+
 Example code with horizontal markerlines and legends:
 
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2, line3, line4, line5], [Colors.blue, Colors.red, Colors.red, Colors.yellow, Colors.yellow], ['C', 'C', 'C', 'C', 'C'], tapTextFontWeight: FontWeight.w700,);
@@ -102,7 +103,9 @@ Example code with horizontal markerlines and legends:
       ),
     );
 
+
 Example code with horizontal and vertical markerlines along with icons on the chart and legends:
+
 It is possible to define a maximum of two vertical markerlines. 
 The verticalMarker variable is a List<DateTime> and the length can be >= 2. 
 If two vertical markerlines are defined, the area between the two lines will be filled with a color that can be defined with verticalMarkerColor.
@@ -159,6 +162,7 @@ The possibility of adding a colored background to the icons have been added and 
         ),
       ),
     );
+
 
 The example app, can toggle between line chart and area chart.
 ![Example app](exampleScreenshot.png)
