@@ -31,10 +31,10 @@ Area chart:
 ![Area Chart example](areaChartGradient.png)
 
 Example code:
-
+```dart
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2], [Colors.green, Colors.blue]);
 
-   ```dart return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -49,10 +49,10 @@ Example code:
         ),
       ),
     );
-
+```
 <br/>
 Example code with horizontal markerlines and legends:
-
+```dart
     LineChart lineChart = LineChart.fromDateTimeMaps([
         line1,
         line2,
@@ -72,7 +72,7 @@ Example code with horizontal markerlines and legends:
         'C',
         'C',
       ], tapTextFontWeight: FontWeight.w400);
-
+```
   To define a line as a horizontal dashed markerline, first define the line as any other regular line, then set isMarkerLine to true:<br/>
     
     lineChart.lines[1].isMarkerLine = true;
@@ -81,21 +81,23 @@ Example code with horizontal markerlines and legends:
     lineChart.lines[4].isMarkerLine = true;
     
   Or: <br/>
-    
+  ```dart
     lineChart.lines.skip(1).forEach((line) {
         line.isMarkerLine = true;
       });
-    
+  ```
   Legends: <br/>
   A Legend has the following constructor: <br/>
-      
+  ```dart
       const Legend({this.title, this.color, this.icon, this.style});
+  ```
     
   You can choose to either have a short line or an Icon as the first part of the legend before the title. If no Icon is defined, then a short line will be shown. <br/>
   You can change the Color of the line and the TextStyle of the String title. <br/>
   You can add however many Legend you want. <br/>
 
-```dart return Scaffold(
+```dart 
+      return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -123,7 +125,7 @@ Example code with horizontal markerlines and legends:
         ),
       ),
     ); 
-
+```
 <br/>
 Example code with horizontal and vertical markerlines along with icons on the chart and legends:
 
@@ -135,7 +137,8 @@ Example code with horizontal and vertical markerlines along with icons on the ch
   The verticalMarkerIcon variable takes a List<Icon> and the lenght must be equal to the length of the verticalMarker variable. <br/>
   The possibility of adding a colored background to the icons have been added and can be defined with iconBackgroundColor which takes a Color. <br/>
 
-      ```dart return Scaffold(
+```dart 
+      return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -183,7 +186,7 @@ Example code with horizontal and vertical markerlines along with icons on the ch
         ),
       ),
     );
-
+```
 
 The example app, can toggle between line chart and area chart.
 ![Example app](exampleScreenshot.png)
