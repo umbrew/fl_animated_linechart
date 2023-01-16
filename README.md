@@ -53,7 +53,26 @@ Example code:
 <br/>
 Example code with horizontal markerlines and legends:
 
-    LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2, line3, line4, line5], [Colors.blue, Colors.red, Colors.red, Colors.yellow, Colors.yellow], ['C', 'C', 'C', 'C', 'C'], tapTextFontWeight: FontWeight.w700,);
+    LineChart lineChart;
+    lineChart = LineChart.fromDateTimeMaps([
+        line1,
+        line2,
+        line3,
+        line4,
+        line5
+      ], [
+        Colors.blue,
+        Colors.red,
+        Colors.yellow,
+        Colors.yellow,
+        Colors.red
+      ], [
+        'C',
+        'C',
+        'C',
+        'C',
+        'C',
+      ], tapTextFontWeight: FontWeight.w400);
 
   To define a line as a horizontal dashed markerline:<br/>
     
@@ -89,7 +108,7 @@ Example code with horizontal markerlines and legends:
           children: [
             Expanded(
               child: AnimatedLineChart(
-                chart,
+                lineChart,
                 toolTipColor: Colors.white,
                 gridColor: Colors.black54,
                 textStyle: TextStyle(fontSize: 10, color: Colors.black54),
@@ -129,7 +148,7 @@ Example code with horizontal and vertical markerlines along with icons on the ch
           children: [
             Expanded(
               child: AnimatedLineChart(
-                chart,
+                lineChart,
                 toolTipColor: Colors.white,
                 gridColor: Colors.black54,
                 textStyle: TextStyle(fontSize: 10, color: Colors.black54),
