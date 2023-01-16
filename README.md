@@ -55,24 +55,24 @@ Example code with horizontal markerlines and legends:
 
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2, line3, line4, line5], [Colors.blue, Colors.red, Colors.red, Colors.yellow, Colors.yellow], ['C', 'C', 'C', 'C', 'C'], tapTextFontWeight: FontWeight.w700,);
 
-    To define a line as a horizontal dashed markerline:
+To define a line as a horizontal dashed markerline:
       lineChart.lines[1].isMarkerLine = true;
       lineChart.lines[2].isMarkerLine = true;
       lineChart.lines[3].isMarkerLine = true;
       lineChart.lines[4].isMarkerLine = true;
     
-    Or: 
+Or: 
     lineChart.lines.skip(1).forEach((line) {
           line.isMarkerLine = true;
         });
     
-    Legends:
-    A Legend has the following constructor:
-        const Legend({this.title, this.color, this.icon, this.style});
+Legends:
+A Legend has the following constructor:
+      const Legend({this.title, this.color, this.icon, this.style});
     
-    You can choose to either have a short line or an Icon as the first part of the legend before the title. If no Icon is defined, then a short line will be shown. 
-    You can change the Color of the line and the TextStyle of the String title. 
-    You can add however many Legend you want. 
+You can choose to either have a short line or an Icon as the first part of the legend before the title. If no Icon is defined, then a short line will be shown. <br/>
+You can change the Color of the line and the TextStyle of the String title. <br/>
+You can add however many Legend you want. <br/>
 
       return Scaffold(
       appBar: AppBar(
@@ -106,13 +106,13 @@ Example code with horizontal markerlines and legends:
 <br/>
 Example code with horizontal and vertical markerlines along with icons on the chart and legends:
 
-It is possible to define a maximum of two vertical markerlines. 
-The verticalMarker variable is a List<DateTime> and the length can be >= 2. 
-If two vertical markerlines are defined, the area between the two lines will be filled with a color that can be defined with verticalMarkerColor.
+  It is possible to define a maximum of two vertical markerlines. <br/>
+  The verticalMarker variable is a List<DateTime> and the length can be >= 2. <br/>
+  If two vertical markerlines are defined, the area between the two lines will be filled with a color that can be defined with verticalMarkerColor.<br/>
 
-It is possible to add an Icon on the point where the vertical markerline crosses the y-axis value by defining the verticalMarkerIcon. 
-The verticalMarkerIcon variable takes a List<Icon> and the lenght must be equal to the length of the verticalMarker variable. 
-The possibility of adding a colored background to the icons have been added and can be defined with iconBackgroundColor which takes a Color. 
+  It is possible to add an Icon on the point where the vertical markerline crosses the y-axis value by defining the verticalMarkerIcon. <br/>
+  The verticalMarkerIcon variable takes a List<Icon> and the lenght must be equal to the length of the verticalMarker variable. <br/>
+  The possibility of adding a colored background to the icons have been added and can be defined with iconBackgroundColor which takes a Color. <br/>
 
       return Scaffold(
       appBar: AppBar(
