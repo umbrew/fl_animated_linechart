@@ -50,7 +50,7 @@ Example code:
       ),
     );
 
-
+<br/>
 Example code with horizontal markerlines and legends:
 
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2, line3, line4, line5], [Colors.blue, Colors.red, Colors.red, Colors.yellow, Colors.yellow], ['C', 'C', 'C', 'C', 'C'], tapTextFontWeight: FontWeight.w700,);
@@ -103,7 +103,7 @@ Example code with horizontal markerlines and legends:
       ),
     );
 
-
+<br/>
 Example code with horizontal and vertical markerlines along with icons on the chart and legends:
 
 It is possible to define a maximum of two vertical markerlines. 
