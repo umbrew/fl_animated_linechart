@@ -66,7 +66,7 @@ Example code with horizontal markerlines and legends:
         });
     
     Legends:
-    A legends has the following constructor:
+    A Legend has the following constructor:
         const Legend({this.title, this.color, this.icon, this.style});
     
     You can choose to either have a short line or an Icon as the first part of the legend before the title. If no Icon is defined, then a short line will be shown. 
