@@ -73,9 +73,9 @@ Example code with horizontal markerlines and legends:
         'C',
       ], tapTextFontWeight: FontWeight.w400);
 
-  To define a line as a horizontal dashed markerline:<br/>
+  To define a line as a horizontal dashed markerline, first define the line as any other regular line, then set isMarkerLine to true:<br/>
     
-    lineChart.lines[1].isMarkerLine = true;
+    (```dart)lineChart.lines[1].isMarkerLine = true;
     lineChart.lines[2].isMarkerLine = true;
     lineChart.lines[3].isMarkerLine = true;
     lineChart.lines[4].isMarkerLine = true;
@@ -95,7 +95,7 @@ Example code with horizontal markerlines and legends:
   You can change the Color of the line and the TextStyle of the String title. <br/>
   You can add however many Legend you want. <br/>
 
-      return Scaffold(
+      (```dart)return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -135,7 +135,7 @@ Example code with horizontal and vertical markerlines along with icons on the ch
   The verticalMarkerIcon variable takes a List<Icon> and the lenght must be equal to the length of the verticalMarker variable. <br/>
   The possibility of adding a colored background to the icons have been added and can be defined with iconBackgroundColor which takes a Color. <br/>
 
-      return Scaffold(
+      (```dart)return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
