@@ -53,8 +53,7 @@ Example code:
 <br/>
 Example code with horizontal markerlines and legends:
 
-    LineChart lineChart;
-    lineChart = LineChart.fromDateTimeMaps([
+    LineChart lineChart = LineChart.fromDateTimeMaps([
         line1,
         line2,
         line3,
