@@ -64,43 +64,43 @@ class FakeChartSeries {
   Map<DateTime, double> createLine2_3() {
     Map<DateTime, double> data = {};
 
-    data[DateTime.now().subtract(Duration(minutes: 80))] = 10.0;
+    data[DateTime.now().subtract(Duration(minutes: 80))] = 15.0;
     data[DateTime.now().subtract(Duration(minutes: 70))] = 15.0;
     data[DateTime.now().subtract(Duration(minutes: 60))] = 15.0;
     data[DateTime.now().subtract(Duration(minutes: 50))] = 25.0;
-    data[DateTime.now().subtract(Duration(minutes: 40))] = 13.0;
+    data[DateTime.now().subtract(Duration(minutes: 40))] = 9.0;
     data[DateTime.now().subtract(Duration(minutes: 30))] = 24.0;
     data[DateTime.now().subtract(Duration(minutes: 23))] = 37.0;
     data[DateTime.now().subtract(Duration(minutes: 22))] = 39.0;
     data[DateTime.now().subtract(Duration(minutes: 20))] = 29.0;
     data[DateTime.now().subtract(Duration(minutes: 15))] = 27.0;
-    data[DateTime.now().subtract(Duration(minutes: 12))] = 9.0;
+    data[DateTime.now().subtract(Duration(minutes: 12))] = 12.0;
     data[DateTime.now().subtract(Duration(minutes: 5))] = 35.0;
     return data;
   }
 
-  Map<DateTime, double> createUpperCriticalLine() {
+  Map<DateTime, double> yAxisUpperMaxMarkerLine() {
     Map<DateTime, double> data = {};
     data[DateTime.now().subtract(Duration(minutes: 80))] = 119.0;
     data[DateTime.now().subtract(Duration(minutes: 5))] = 119.0;
     return data;
   }
 
-  Map<DateTime, double> createLowerCriticalLine() {
+  Map<DateTime, double> yAxisLowerMaxMarkerLine() {
     Map<DateTime, double> data = {};
     data[DateTime.now().subtract(Duration(minutes: 80))] = -10.0;
     data[DateTime.now().subtract(Duration(minutes: 5))] = -10.0;
     return data;
   }
 
-  Map<DateTime, double> createUpperWarningLine() {
+  Map<DateTime, double> yAxisUpperMinMarkerLine() {
     Map<DateTime, double> data = {};
     data[DateTime.now().subtract(Duration(minutes: 80))] = 100.0;
     data[DateTime.now().subtract(Duration(minutes: 5))] = 100.0;
     return data;
   }
 
-  Map<DateTime, double> createLowerWarningLine() {
+  Map<DateTime, double> yAxisLowerMinMarkerLine() {
     Map<DateTime, double> data = {};
     data[DateTime.now().subtract(Duration(minutes: 80))] = 10.0;
     data[DateTime.now().subtract(Duration(minutes: 5))] = 10.0;

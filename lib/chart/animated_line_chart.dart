@@ -35,7 +35,7 @@ class AnimatedLineChart extends StatefulWidget {
     required this.gridColor,
     required this.toolTipColor,
     this.legends,
-    this.showMarkerLines,
+    this.showMarkerLines = false,
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
@@ -143,7 +143,7 @@ class _GestureWrapper extends StatefulWidget {
     this.toolTipColor,
     this.textStyle,
     this.legends,
-    this.showMarkerLines,
+    this.showMarkerLines = false,
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
@@ -231,7 +231,7 @@ class _AnimatedChart extends AnimatedWidget {
     this.gridColor,
     this.toolTipColor,
     this.legends,
-    this.showMarkerLines,
+    this.showMarkerLines = false,
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
@@ -311,7 +311,7 @@ class ChartPainter extends CustomPainter {
     required Color gridColor,
     required Color toolTipColor,
     this.legends,
-    this.showMarkerLines,
+    this.showMarkerLines = false,
     this.verticalMarker,
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
@@ -383,7 +383,7 @@ class ChartPainter extends CustomPainter {
     });
 
     highlights.forEach((highlight) {
-      if (_chart.lines[index].isMarkerLine != true) {
+      if (!_chart.lines[index].isMarkerLine) {
         canvas.drawCircle(
             Offset(highlight.chartPoint.x, highlight.chartPoint.y),
             5,
@@ -525,7 +525,7 @@ class ChartPainter extends CustomPainter {
       } else {
         path = _chart.getPathCache(index);
 
-        if (drawCircles && chartLine.isMarkerLine != true) {
+        if (drawCircles && !chartLine.isMarkerLine) {
           points.forEach((p) {
             canvas.drawCircle(
                 Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter);
@@ -533,7 +533,7 @@ class ChartPainter extends CustomPainter {
         }
       }
 
-      if (chartLine.isMarkerLine == true && showMarkerLines == true) {
+      if (chartLine.isMarkerLine && showMarkerLines!) {
         canvas.drawPath(
             dashPath(
               path!,
@@ -668,7 +668,7 @@ class ChartPainter extends CustomPainter {
     }
 
     if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
-      assert(verticalMarkerIcon!.length <= 2);
+      assert(verticalMarkerIcon!.length == verticalMarker!.length);
       TextPainter firstIconTp = TextPainter(
         textDirection: TextDirectionHelper.getDirection(),
       );

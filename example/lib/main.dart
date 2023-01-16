@@ -36,10 +36,10 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
   Widget build(BuildContext context) {
     Map<DateTime, double> line1 = createLine2();
     Map<DateTime, double> line2 = createLine2_2();
-    Map<DateTime, double> line3 = createUpperCriticalLine();
-    Map<DateTime, double> line4 = createUpperWarningLine();
-    Map<DateTime, double> line5 = createLowerWarningLine();
-    Map<DateTime, double> line6 = createLowerCriticalLine();
+    Map<DateTime, double> line3 = yAxisUpperMaxMarkerLine();
+    Map<DateTime, double> line4 = yAxisUpperMinMarkerLine();
+    Map<DateTime, double> line5 = yAxisLowerMinMarkerLine();
+    Map<DateTime, double> line6 = yAxisLowerMaxMarkerLine();
     Map<DateTime, double> line7 = createLine2_3();
 
     LineChart chart;
@@ -154,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                     ),
                     TextButton(
                       style: flatButtonStyle,
-                      child: Text('Thresholds',
+                      child: Text('MarkerLines',
                           style: TextStyle(
                               color: chartIndex == 3
                                   ? Colors.black
@@ -187,24 +187,25 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                   verticalMarker: chartIndex == 3
                       ? [
                           DateTime.now()
-                              .subtract(Duration(minutes: 30))
+                              .subtract(Duration(minutes: 40))
                               .toLocal(),
                           DateTime.now()
                               .toLocal()
-                              .subtract(Duration(minutes: 20))
+                              .subtract(Duration(minutes: 30)),
                         ]
                       : null,
-                  verticalMarkerColor: chartIndex == 3 ? Colors.red : null,
+                  verticalMarkerColor: chartIndex == 3 ? Colors.yellow : null,
                   verticalMarkerIcon: [
                     Icon(
-                      Icons.cancel_rounded,
-                      color: Colors.red,
+                      Icons.report_problem_rounded,
+                      color: Colors.yellow,
                     ),
                     Icon(
                       Icons.check_circle_rounded,
                       color: Colors.green,
                     ),
                   ],
+                  iconBackgroundColor: Colors.white,
                 ), //Unique key to force animations
               )),
               SizedBox(width: 200, height: 50, child: Text('')),
