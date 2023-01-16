@@ -130,19 +130,11 @@ Example code with horizontal markerlines and legends:
 Example code with horizontal and vertical markerlines along with icons on the chart and legends:
 
   It is possible to define a maximum of two vertical markerlines. <br/>
-  The verticalMarker variable is a 
-  ```dart 
-  List<DateTime> 
-  ``` 
-  and the length can be >= 2. <br/>
+  The verticalMarker variable is a ``` List<DateTime> ``` and the length can be >= 2. <br/>
   If two vertical markerlines are defined, the area between the two lines will be filled with a color that can be defined with verticalMarkerColor.<br/>
 
   It is possible to add an Icon on the point where the vertical markerline crosses the y-axis value by defining the verticalMarkerIcon. <br/>
-  The verticalMarkerIcon variable takes a 
-  ```dart 
-  List<Icon> 
-  ``` 
-  and the lenght must be equal to the length of the verticalMarker variable. <br/>
+  The verticalMarkerIcon variable takes a ``` List<Icon> ``` and the lenght must be equal to the length of the verticalMarker variable. <br/>
   The possibility of adding a colored background to the icons have been added and can be defined with iconBackgroundColor which takes a Color. <br/>
 
 ```dart 
