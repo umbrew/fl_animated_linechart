@@ -417,8 +417,8 @@ class ChartPainter extends CustomPainter {
         maxWidth = tp.width;
       }
 
-      if (_chart.lines[index].isMarkerLine !=
-          true) // do not show threshold values in highlight box
+      if (!_chart.lines[index]
+          .isMarkerLine) // do not show threshold values in highlight box
       {
         textPainters.add(tp);
       }
@@ -795,11 +795,12 @@ class Legend extends StatelessWidget {
               ),
         Text(
           ' $title',
-          style: TextStyle(
-            color: style?.color,
-            fontSize: 12,
-            overflow: TextOverflow.clip,
-          ),
+          style: style ??
+              TextStyle(
+                color: Colors.black,
+                fontSize: 12,
+                overflow: TextOverflow.clip,
+              ),
         ),
       ],
     );
