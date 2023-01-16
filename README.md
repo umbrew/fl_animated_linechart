@@ -56,18 +56,21 @@ Example code with horizontal markerlines and legends:
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2, line3, line4, line5], [Colors.blue, Colors.red, Colors.red, Colors.yellow, Colors.yellow], ['C', 'C', 'C', 'C', 'C'], tapTextFontWeight: FontWeight.w700,);
 
   To define a line as a horizontal dashed markerline:<br/>
+    
     lineChart.lines[1].isMarkerLine = true;
     lineChart.lines[2].isMarkerLine = true;
     lineChart.lines[3].isMarkerLine = true;
     lineChart.lines[4].isMarkerLine = true;
     
   Or: <br/>
+    
     lineChart.lines.skip(1).forEach((line) {
         line.isMarkerLine = true;
       });
     
   Legends: <br/>
   A Legend has the following constructor: <br/>
+      
       const Legend({this.title, this.color, this.icon, this.style});
     
   You can choose to either have a short line or an Icon as the first part of the legend before the title. If no Icon is defined, then a short line will be shown. <br/>
