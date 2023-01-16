@@ -30,7 +30,7 @@ Area chart:
 ![Area Chart example](areaChart.png)
 ![Area Chart example](areaChartGradient.png)
 
-###### Example code:
+Example code:
 
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2], [Colors.green, Colors.blue]);
 
@@ -51,7 +51,7 @@ Area chart:
     );
 
 
-###### Example code with horizontal markerlines and legends:
+Example code with horizontal markerlines and legends:
 
     LineChart lineChart = LineChart.fromDateTimeMaps([line1, line2, line3, line4, line5], [Colors.blue, Colors.red, Colors.red, Colors.yellow, Colors.yellow], ['C', 'C', 'C', 'C', 'C'], tapTextFontWeight: FontWeight.w700,);
 
@@ -104,7 +104,7 @@ Area chart:
     );
 
 
-###### Example code with horizontal and vertical markerlines along with icons on the chart and legends:
+Example code with horizontal and vertical markerlines along with icons on the chart and legends:
 
 It is possible to define a maximum of two vertical markerlines. 
 The verticalMarker variable is a List<DateTime> and the length can be >= 2. 
@@ -164,5 +164,5 @@ The possibility of adding a colored background to the icons have been added and 
     );
 
 
-###### The example app, can toggle between line chart and area chart.
+The example app, can toggle between line chart and area chart.
 ![Example app](exampleScreenshot.png)
