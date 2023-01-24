@@ -186,14 +186,10 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                   showMarkerLines: chartIndex == 3 ? true : null,
                   verticalMarker: chartIndex == 3
                       ? [
-                          DateTime.now()
-                              .subtract(Duration(minutes: 40))
-                              .toLocal(),
-                          DateTime.now()
-                              .toLocal()
-                              .subtract(Duration(minutes: 30)),
+                          DateTime.parse('2012-02-27 13:33:43.564'),
+                          DateTime.parse('2012-02-27 13:38:00'),
                         ]
-                      : null,
+                      : [],
                   verticalMarkerColor: chartIndex == 3 ? Colors.yellow : null,
                   verticalMarkerIcon: [
                     Icon(
