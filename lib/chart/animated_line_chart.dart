@@ -7,12 +7,16 @@ import 'package:fl_animated_linechart/chart/line_chart.dart';
 import 'package:fl_animated_linechart/common/animated_path_util.dart';
 import 'package:fl_animated_linechart/common/pair.dart';
 import 'package:fl_animated_linechart/common/text_direction_helper.dart';
+import 'package:fl_animated_linechart/common/tuple_3.dart';
+import 'package:fl_animated_linechart/fl_animated_linechart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:path_drawing/path_drawing.dart';
 
 typedef TapText = String Function(String prefix, double y, String unit);
+
+enum MaxMin { MAX, MIN }
 
 class AnimatedLineChart extends StatefulWidget {
   final LineChart chart;
@@ -26,6 +30,9 @@ class AnimatedLineChart extends StatefulWidget {
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
   final Color? iconBackgroundColor;
+  final bool? fillMarkerLines;
+  final double? innerGridStrokeWidth;
+  final List<MaxMin>? filledMarkerLinesValues;
 
   const AnimatedLineChart(
     this.chart, {
@@ -40,6 +47,9 @@ class AnimatedLineChart extends StatefulWidget {
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
     this.iconBackgroundColor,
+    this.fillMarkerLines = false,
+    this.innerGridStrokeWidth,
+    this.filledMarkerLinesValues,
   }) : super(key: key);
 
   @override
@@ -95,6 +105,9 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
               verticalMarkerColor: widget.verticalMarkerColor,
               verticalMarkerIcon: widget.verticalMarkerIcon,
               iconBackgroundColor: widget.iconBackgroundColor,
+              fillMarkerLines: widget.fillMarkerLines,
+              innerGridStrokeWidth: widget.innerGridStrokeWidth,
+              filledMarkerLinesValues: widget.filledMarkerLinesValues,
             );
           }),
         ),
@@ -133,6 +146,9 @@ class _GestureWrapper extends StatefulWidget {
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
   final Color? iconBackgroundColor;
+  final bool? fillMarkerLines;
+  final double? innerGridStrokeWidth;
+  final List<MaxMin>? filledMarkerLinesValues;
 
   const _GestureWrapper(
     this._chart,
@@ -148,6 +164,9 @@ class _GestureWrapper extends StatefulWidget {
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
     this.iconBackgroundColor,
+    this.fillMarkerLines = false,
+    this.innerGridStrokeWidth,
+    this.filledMarkerLinesValues,
   }) : super(key: key);
 
   @override
@@ -176,6 +195,9 @@ class _GestureWrapperState extends State<_GestureWrapper> {
         verticalMarkerColor: widget.verticalMarkerColor,
         verticalMarkerIcon: widget.verticalMarkerIcon,
         iconBackgroundColor: widget.iconBackgroundColor,
+        fillMarkerLines: widget.fillMarkerLines,
+        innerGridStrokeWidth: widget.innerGridStrokeWidth,
+        filledMarkerLinesValues: widget.filledMarkerLinesValues,
       ),
       onTapDown: (tap) {
         _horizontalDragActive = true;
@@ -219,6 +241,9 @@ class _AnimatedChart extends AnimatedWidget {
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
   final Color? iconBackgroundColor;
+  final bool? fillMarkerLines;
+  final double? innerGridStrokeWidth;
+  final List<MaxMin>? filledMarkerLinesValues;
 
   _AnimatedChart(
     this._chart,
@@ -236,6 +261,9 @@ class _AnimatedChart extends AnimatedWidget {
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
     this.iconBackgroundColor,
+    this.fillMarkerLines = false,
+    this.innerGridStrokeWidth,
+    this.filledMarkerLinesValues,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -258,6 +286,9 @@ class _AnimatedChart extends AnimatedWidget {
         verticalMarkerColor: verticalMarkerColor,
         verticalMarkerIcon: verticalMarkerIcon,
         iconBackgroundColor: iconBackgroundColor,
+        fillMarkerLines: fillMarkerLines,
+        innerGridStrokeWidth: innerGridStrokeWidth,
+        filledMarkerLinesValues: filledMarkerLinesValues,
       ),
       child: Container(),
     );
@@ -294,6 +325,9 @@ class ChartPainter extends CustomPainter {
   final Color? verticalMarkerColor;
   final List<Icon>? verticalMarkerIcon;
   final Color? iconBackgroundColor;
+  final bool? fillMarkerLines;
+  final double? innerGridStrokeWidth;
+  final List<MaxMin>? filledMarkerLinesValues;
 
   TapText? tapText;
   final TextStyle? style;
@@ -316,6 +350,9 @@ class ChartPainter extends CustomPainter {
     this.verticalMarkerColor,
     this.verticalMarkerIcon,
     this.iconBackgroundColor,
+    this.fillMarkerLines = false,
+    this.innerGridStrokeWidth,
+    this.filledMarkerLinesValues,
   }) {
     tapText = tapText ?? _defaultTapText;
     _tooltipPainter.color = toolTipColor;
@@ -329,6 +366,12 @@ class ChartPainter extends CustomPainter {
     _drawUnits(canvas, size, style);
     _drawLines(size, canvas);
     _drawAxisValues(canvas, size);
+
+    if (showMarkerLines! &&
+        fillMarkerLines! &&
+        filledMarkerLinesValues != null) {
+      _drawShadedAreaBetweenLines(size, canvas);
+    }
 
     if (_horizontalDragActive) {
       _drawHighlights(
@@ -588,6 +631,57 @@ class ChartPainter extends CustomPainter {
     }
   }
 
+  void _drawShadedAreaBetweenLines(Size size, Canvas canvas) {
+    assert(filledMarkerLinesValues!.length ==
+        _chart.lines.where((line) => line.isMarkerLine).length);
+
+    List values = [];
+
+    if (_chart.seriesMap != null) {
+      _chart.seriesMap!.forEach((key, value) {
+        if (key == 0) {
+        } else {
+          value.forEach((highlightPoint) {
+            values.add(highlightPoint.chartPoint.y);
+          });
+        }
+      });
+    }
+
+    List distinctValues = values.toSet().toList();
+
+    List<Tuple3> sortedList = [];
+
+    for (int i = 0; i < distinctValues.length; i++) {
+      sortedList.add(Tuple3(filledMarkerLinesValues![i], distinctValues[i],
+          _chart.lines[i + 1].color));
+    }
+
+    sortedList.sort((a, b) => a.middle.compareTo(b.middle));
+
+    for (int i = 0; i < sortedList.length; i++) {
+      if (sortedList[i].left == MaxMin.MAX) {
+        canvas.drawRect(
+            Rect.fromPoints(
+              Offset(_chart.xAxisOffsetPX, sortedList[i].middle),
+              Offset(size.width, i >= 1 ? sortedList[i - 1].middle : 0),
+            ),
+            Paint()..color = sortedList[i].right.withOpacity(0.1));
+      } else {
+        canvas.drawRect(
+            Rect.fromPoints(
+              Offset(_chart.xAxisOffsetPX, sortedList[i].middle),
+              Offset(
+                  size.width,
+                  sortedList[i] == sortedList.last
+                      ? size.height - LineChart.axisOffsetPX
+                      : sortedList[i + 1].middle),
+            ),
+            Paint()..color = sortedList[i].right.withOpacity(0.1));
+      }
+    }
+  }
+
   void _drawVerticalMarkers(Size size, Canvas canvas) {
     assert(verticalMarker!.length <= 2);
 
@@ -748,12 +842,12 @@ class ChartPainter extends CustomPainter {
           Offset(_chart.xAxisOffsetPX, c * _chart.heightStepSize!),
           Offset(size.width - _chart.xAxisOffsetPXright,
               c * _chart.heightStepSize!),
-          _gridPainter);
+          _gridPainter..strokeWidth = innerGridStrokeWidth ?? 1);
       canvas.drawLine(
           Offset(c * _chart.widthStepSize! + _chart.xAxisOffsetPX, 0),
           Offset(c * _chart.widthStepSize! + _chart.xAxisOffsetPX,
               size.height - LineChart.axisOffsetPX),
-          _gridPainter);
+          _gridPainter..strokeWidth = innerGridStrokeWidth ?? 1);
     }
   }
 

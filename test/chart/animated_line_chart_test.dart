@@ -618,4 +618,79 @@ void main() {
     await expectLater(find.byType(AnimatedLineChart),
         matchesGoldenFile('animatedLineChartWithLegends.png'));
   });
+
+  testWidgets('Test shaded area between marker lines',
+      (WidgetTester tester) async {
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
+
+    List<Map<DateTime, double>> series = [];
+    Map<DateTime, double> line = {};
+    line[start] = 1.2;
+    line[start.add(Duration(minutes: 5))] = 0.5;
+    line[start.add(Duration(minutes: 7))] = 1.7;
+    line[start.add(Duration(minutes: 10))] = 1;
+
+    Map<DateTime, double> upperCritical = {};
+    upperCritical[start] = 2;
+    upperCritical[start.add(Duration(minutes: 10))] = 2;
+
+    Map<DateTime, double> lowerCritical = {};
+    lowerCritical[start] = 0;
+    lowerCritical[start.add(Duration(minutes: 10))] = 0;
+
+    Map<DateTime, double> upperWarning = {};
+    upperWarning[start] = 1.7;
+    upperWarning[start.add(Duration(minutes: 7))] = 1.7;
+
+    Map<DateTime, double> lowerWarning = {};
+    lowerWarning[start] = 0.4;
+    lowerWarning[start.add(Duration(minutes: 10))] = 0.4;
+
+    series.add(line);
+    series.add(upperCritical);
+    series.add(upperWarning);
+    series.add(lowerWarning);
+    series.add(lowerCritical);
+
+    LineChart lineChart = LineChart.fromDateTimeMaps(
+        series,
+        [Colors.pink, Colors.red, Colors.yellow, Colors.yellow, Colors.red],
+        ['P', 'P', 'P', 'P', 'P']);
+
+    lineChart.initialize(
+      200,
+      100,
+      TextStyle(
+          color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
+    );
+    lineChart.lines[1].isMarkerLine = true;
+    lineChart.lines[2].isMarkerLine = true;
+    lineChart.lines[3].isMarkerLine = true;
+    lineChart.lines[4].isMarkerLine = true;
+
+    await tester.pumpWidget(
+      buildTestableWidget(
+        AnimatedLineChart(
+          lineChart,
+          gridColor: Colors.black54,
+          textStyle: TextStyle(fontSize: 10, color: Colors.black54),
+          toolTipColor: Colors.white,
+          showMarkerLines: true,
+          fillMarkerLines: true,
+          filledMarkerLinesValues: [
+            MaxMin.MAX,
+            MaxMin.MAX,
+            MaxMin.MIN,
+            MaxMin.MIN,
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(Duration(seconds: 1));
+    await tester.pump(Duration(seconds: 1));
+
+    await expectLater(find.byType(AnimatedLineChart),
+        matchesGoldenFile('animatedLineChartShadedAreaBetweenMarkerLines.png'));
+  });
 }

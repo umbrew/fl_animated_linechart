@@ -70,13 +70,13 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
         line3,
         line4,
         line5,
-        line6
+        line6,
       ], [
         Colors.blue,
         Colors.red,
         Colors.yellow,
         Colors.yellow,
-        Colors.red
+        Colors.red,
       ], [
         'C',
         'C',
@@ -183,13 +183,8 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                           Legend(title: 'Warning', color: Colors.yellow),
                         ]
                       : null,
-                  showMarkerLines: chartIndex == 3 ? true : null,
-                  verticalMarker: chartIndex == 3
-                      ? [
-                          DateTime.parse('2012-02-27 13:33:43.564'),
-                          DateTime.parse('2012-02-27 13:38:00'),
-                        ]
-                      : [],
+                  showMarkerLines: chartIndex == 3 ? true : false,
+                  fillMarkerLines: chartIndex == 3 ? true : false,
                   verticalMarkerColor: chartIndex == 3 ? Colors.yellow : null,
                   verticalMarkerIcon: [
                     Icon(
@@ -202,6 +197,14 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                     ),
                   ],
                   iconBackgroundColor: Colors.white,
+                  filledMarkerLinesValues: chartIndex == 3
+                      ? [
+                          MaxMin.MAX,
+                          MaxMin.MAX,
+                          MaxMin.MIN,
+                          MaxMin.MIN,
+                        ]
+                      : [],
                 ), //Unique key to force animations
               )),
               SizedBox(width: 200, height: 50, child: Text('')),
