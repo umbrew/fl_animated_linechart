@@ -25,6 +25,7 @@ Highlight for the line chart:
 ![Chart example with highlight](withSelection.png)
 ![Chart example with markerlines and legends](withMarkerlinesAndLegends.png)
 ![Chart example with horizontal and vertical markerlines along with icons on the chart and legends](withHorizontalAndVerticalMarkerlinesAndLegends.png)
+![Chart example with shaded area between markerlines](withShadedAreaBetweenMarkerlines.png)
 
 Area chart:
 ![Area Chart example](areaChart.png)
@@ -191,126 +192,43 @@ Example code with horizontal and vertical markerlines along with icons on the ch
 Example code with shaded area between markerlines:
 It is possible to have shaded areas between the defined markerlines. <br/>
 The shaded area will be in the same color as the markerline. <br/>
-It is important that the order of enums in the filledMarkerLinesValues matches the order of defined markerlines to be shown in the graph. <br/>
+It is important that the order of enums in the ``` List<MaxMin> ``` filledMarkerLinesValues matches the order of defined markerlines to be shown in the graph. <br/>
 Enums with the value MaxMin.MAX will draw to the top if there is only one markerline defined as MAX, otherwise it will draw from i - 1 where enum values are MAX. <br/>
 If enum value is MaxMin.MIN the shaded area will draw downwards to i + 1, unless the index is the last in the list, then the shaded area will draw all the way to the bottom of the graph. <br/>
 ```dart 
-return Scaffold(
+      return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: Container(
         child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    TextButton(
-                      style: flatButtonStyle,
-                      child: Text(
-                        'LineChart',
-                        style: TextStyle(
-                            color: chartIndex == 0
-                                ? Colors.black
-                                : Colors.black12),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          chartIndex = 0;
-                        });
-                      },
-                    ),
-                    TextButton(
-                      style: flatButtonStyle,
-                      child: Text('LineChart2',
-                          style: TextStyle(
-                              color: chartIndex == 1
-                                  ? Colors.black
-                                  : Colors.black12)),
-                      onPressed: () {
-                        setState(() {
-                          chartIndex = 1;
-                        });
-                      },
-                    ),
-                    TextButton(
-                      style: flatButtonStyle,
-                      child: Text('AreaChart',
-                          style: TextStyle(
-                              color: chartIndex == 2
-                                  ? Colors.black
-                                  : Colors.black12)),
-                      onPressed: () {
-                        setState(() {
-                          chartIndex = 2;
-                        });
-                      },
-                    ),
-                    TextButton(
-                      style: flatButtonStyle,
-                      child: Text('MarkerLines',
-                          style: TextStyle(
-                              color: chartIndex == 3
-                                  ? Colors.black
-                                  : Colors.black12)),
-                      onPressed: () {
-                        setState(() {
-                          chartIndex = 3;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AnimatedLineChart(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: AnimatedLineChart(
                   chart,
                   key: UniqueKey(),
                   gridColor: Colors.black54,
                   textStyle: TextStyle(fontSize: 10, color: Colors.black54),
                   toolTipColor: Colors.white,
-                  legends: chartIndex == 3
-                      ? [
-                          Legend(title: 'Critical', color: Colors.red),
-                          Legend(title: 'Warning', color: Colors.yellow),
-                        ]
-                      : null,
                   showMarkerLines: chartIndex == 3 ? true : false,
                   fillMarkerLines: chartIndex == 3 ? true : false,
-                  verticalMarkerColor: chartIndex == 3 ? Colors.yellow : null,
-                  verticalMarkerIcon: [
-                    Icon(
-                      Icons.report_problem_rounded,
-                      color: Colors.yellow,
-                    ),
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.green,
-                    ),
-                  ],
-                  iconBackgroundColor: Colors.white,
-                  filledMarkerLinesValues: chartIndex == 3
-                      ? [
+                  filledMarkerLinesValues:[
                           MaxMin.MAX,
                           MaxMin.MAX,
                           MaxMin.MIN,
                           MaxMin.MIN,
-                        ]
-                      : [],
-                ), //Unique key to force animations
-              )),
-              SizedBox(width: 200, height: 50, child: Text('')),
-            ]),
+                        ],
+                    
+                ),
+            ),
+          ],
+        ),
       ),
     );
+
 ```
 
 The example app, can toggle between line chart and area chart.
