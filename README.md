@@ -90,12 +90,15 @@ Example code with horizontal markerlines and legends:
   Legends: <br/>
   A Legend has the following constructor: <br/>
   ```dart
-      const Legend({this.title, this.color, this.icon, this.style});
+      const Legend({this.title, this.color, this.icon, this.style, this.showLeadingLine = false,});
   ```
     
-  You can choose to either have a short line or an Icon as the first part of the legend before the title. If no Icon is defined, then a short line will be shown. <br/>
-  You can change the Color of the line and the TextStyle of the String title. <br/>
-  You can add however many Legend you want. <br/>
+  You can choose to either have a short line or an Icon as the first part of the legend before the title. It is possible set showLeadingLine to true, then a short line will be shown in the color you have defined. <br/>
+  You can change the Color of the line and Icon, and the TextStyle of the String title. <br/>
+  The length of the Legends list must to equal to the length of chartlines which have isMakerLine = true. <br/>
+  
+  When orientation of the screen is in landscape mode, it is possible to have the legends drawn on the right hand side instead of below the graph. 
+  Simplet set ``` legendsRightLandscapeMode: true ``` and define a double value that represents how much space you want on the right hand side for your legends ``` widthRightLandscapeMode: 70 ``` <br/>
 
 ```dart 
       return Scaffold(
@@ -117,9 +120,11 @@ Example code with horizontal markerlines and legends:
                 showMarkerLines:
                     true, // If this value is not set to true, all defines lines will be filled lines and not dashed
                 legends: [
-                  Legend(title: 'Critical', color: Colors.red),
-                  Legend(title: 'Warning', color: Colors.yellow),
+                  Legend(title: 'Critical', color: Colors.red, showLeadingLine: true),
+                  Legend(title: 'Warning', color: Colors.yellow, Icon(Icons.report_problem_rounded, size: 17, color: Colors.yellow)),
                 ],
+                widthRightLandscapeMode: 70,
+                legendsRightLandscapeMode: true,
               ),
             ),
           ],
@@ -162,12 +167,8 @@ Example code with horizontal and vertical markerlines along with icons on the ch
                   Legend(title: 'Warning', color: Colors.yellow),
                 ],
                 verticalMarker:[
-                          DateTime.now()
-                              .subtract(Duration(minutes: 40))
-                              .toLocal(),
-                          DateTime.now()
-                              .toLocal()
-                              .subtract(Duration(minutes: 30)),
+                    DateTime.parse('2012-02-27 12:54:00'),
+                    DateTime.parse('2012-02-27 13:16:00')
                         ],
                   verticalMarkerColor: Colors.yellow,
                   verticalMarkerIcon: [

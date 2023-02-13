@@ -179,13 +179,50 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                   toolTipColor: Colors.white,
                   legends: chartIndex == 3
                       ? [
-                          Legend(title: 'Critical', color: Colors.red),
-                          Legend(title: 'Warning', color: Colors.yellow),
+                          Legend(
+                            title: 'Critical',
+                            color: Colors.red,
+                            showLeadingLine: true,
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          Legend(
+                            title: 'Warning',
+                            color: Colors.yellow,
+                            showLeadingLine: true,
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          Legend(
+                            title: 'Warning',
+                            color: Colors.yellow,
+                            icon: Icon(
+                              Icons.report_problem_rounded,
+                              size: 17,
+                              color: Colors.yellow,
+                            ),
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          Legend(
+                            title: 'Critical',
+                            color: Colors.red,
+                            showLeadingLine: true,
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
                         ]
-                      : null,
+                      : [],
                   showMarkerLines: chartIndex == 3 ? true : false,
-                  fillMarkerLines: chartIndex == 3 ? true : false,
                   verticalMarkerColor: chartIndex == 3 ? Colors.yellow : null,
+                  verticalMarker: [
+                    DateTime.parse('2012-02-27 12:54:00'),
+                    DateTime.parse('2012-02-27 13:16:00')
+                  ],
                   verticalMarkerIcon: [
                     Icon(
                       Icons.report_problem_rounded,
@@ -197,14 +234,8 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                     ),
                   ],
                   iconBackgroundColor: Colors.white,
-                  filledMarkerLinesValues: chartIndex == 3
-                      ? [
-                          MaxMin.MAX,
-                          MaxMin.MAX,
-                          MaxMin.MIN,
-                          MaxMin.MIN,
-                        ]
-                      : [],
+                  widthRightLandscapeMode: 70,
+                  legendsRightLandscapeMode: true,
                 ), //Unique key to force animations
               )),
               SizedBox(width: 200, height: 50, child: Text('')),

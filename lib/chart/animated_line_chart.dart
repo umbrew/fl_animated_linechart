@@ -33,6 +33,8 @@ class AnimatedLineChart extends StatefulWidget {
   final bool? fillMarkerLines;
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
+  final double? widthRightLandscapeMode;
+  final bool? legendsRightLandscapeMode;
 
   const AnimatedLineChart(
     this.chart, {
@@ -41,15 +43,17 @@ class AnimatedLineChart extends StatefulWidget {
     this.textStyle,
     required this.gridColor,
     required this.toolTipColor,
-    this.legends,
+    this.legends = const [],
     this.showMarkerLines = false,
     this.verticalMarker = const [],
     this.verticalMarkerColor,
-    this.verticalMarkerIcon,
+    this.verticalMarkerIcon = const [],
     this.iconBackgroundColor,
     this.fillMarkerLines = false,
-    this.innerGridStrokeWidth,
-    this.filledMarkerLinesValues,
+    this.innerGridStrokeWidth = 0.0,
+    this.filledMarkerLinesValues = const [],
+    this.widthRightLandscapeMode = 0.0,
+    this.legendsRightLandscapeMode = false,
   }) : super(key: key);
 
   @override
@@ -85,49 +89,100 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-            widget.chart.initialize(
-                constraints.maxWidth, constraints.maxHeight, widget.textStyle);
-            return _GestureWrapper(
-              widget.chart,
-              _animation,
-              tapText: widget.tapText,
-              gridColor: widget.gridColor,
-              textStyle: widget.textStyle,
-              toolTipColor: widget.toolTipColor,
-              legends: widget.legends,
-              showMarkerLines: widget.showMarkerLines,
-              verticalMarker: widget.verticalMarker,
-              verticalMarkerColor: widget.verticalMarkerColor,
-              verticalMarkerIcon: widget.verticalMarkerIcon,
-              iconBackgroundColor: widget.iconBackgroundColor,
-              fillMarkerLines: widget.fillMarkerLines,
-              innerGridStrokeWidth: widget.innerGridStrokeWidth,
-              filledMarkerLinesValues: widget.filledMarkerLinesValues,
-            );
-          }),
-        ),
-        widget.legends != null
-            ? Wrap(
-                direction: Axis.horizontal,
-                children: widget.legends!.map((item) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            right: 4.0, top: 5, left: 4.0),
-                        child: item,
-                      ),
-                    ],
-                  );
-                }).toList())
-            : Container(),
-      ],
+    return OrientationBuilder(
+      builder: (context, orientation) => orientation == Orientation.landscape &&
+              widget.legends!.isNotEmpty &&
+              widget.legendsRightLandscapeMode == true
+          ? Row(
+              children: [
+                Expanded(
+                  child: LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
+                    widget.chart.initialize(constraints.maxWidth,
+                        constraints.maxHeight, widget.textStyle);
+                    return _GestureWrapper(
+                      widget.chart,
+                      _animation,
+                      tapText: widget.tapText,
+                      gridColor: widget.gridColor,
+                      textStyle: widget.textStyle,
+                      toolTipColor: widget.toolTipColor,
+                      legends: widget.legends,
+                      showMarkerLines: widget.showMarkerLines,
+                      verticalMarker: widget.verticalMarker,
+                      verticalMarkerColor: widget.verticalMarkerColor,
+                      verticalMarkerIcon: widget.verticalMarkerIcon,
+                      iconBackgroundColor: widget.iconBackgroundColor,
+                      fillMarkerLines: widget.fillMarkerLines,
+                      innerGridStrokeWidth: widget.innerGridStrokeWidth,
+                      filledMarkerLinesValues: widget.filledMarkerLinesValues,
+                      legendsRightLandscapeMode:
+                          widget.legendsRightLandscapeMode,
+                    );
+                  }),
+                ),
+                Container(
+                  width: widget.widthRightLandscapeMode,
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
+                    widget.chart.initialize(constraints.maxWidth,
+                        constraints.maxHeight, widget.textStyle);
+                    return _GestureWrapper(
+                      widget.chart,
+                      _animation,
+                      tapText: widget.tapText,
+                      gridColor: widget.gridColor,
+                      textStyle: widget.textStyle,
+                      toolTipColor: widget.toolTipColor,
+                      legends: widget.legends,
+                      showMarkerLines: widget.showMarkerLines,
+                      verticalMarker: widget.verticalMarker,
+                      verticalMarkerColor: widget.verticalMarkerColor,
+                      verticalMarkerIcon: widget.verticalMarkerIcon,
+                      iconBackgroundColor: widget.iconBackgroundColor,
+                      fillMarkerLines: widget.fillMarkerLines,
+                      innerGridStrokeWidth: widget.innerGridStrokeWidth,
+                      filledMarkerLinesValues: widget.filledMarkerLinesValues,
+                      legendsRightLandscapeMode: false,
+                    );
+                  }),
+                ),
+                widget.legends!.isNotEmpty
+                    ? Wrap(
+                        direction: Axis.horizontal,
+                        children: widget.legends!.map((legend) {
+                          assert(widget.legends!.length ==
+                                  widget.chart.lines
+                                      .where((line) => line.isMarkerLine)
+                                      .length ||
+                              widget.legends!.length ==
+                                  widget.chart.lines
+                                      .where(
+                                          (line) => line.isMarkerLine == false)
+                                      .length ||
+                              widget.legends!.length ==
+                                  widget.chart.lines.length);
+
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 4.0, top: 5, left: 4.0),
+                                child: legend,
+                              ),
+                            ],
+                          );
+                        }).toList())
+                    : Container(),
+              ],
+            ),
     );
   }
 }
@@ -149,6 +204,7 @@ class _GestureWrapper extends StatefulWidget {
   final bool? fillMarkerLines;
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
+  final bool? legendsRightLandscapeMode;
 
   const _GestureWrapper(
     this._chart,
@@ -158,15 +214,16 @@ class _GestureWrapper extends StatefulWidget {
     this.gridColor,
     this.toolTipColor,
     this.textStyle,
-    this.legends,
+    this.legends = const [],
     this.showMarkerLines = false,
     this.verticalMarker = const [],
     this.verticalMarkerColor,
-    this.verticalMarkerIcon,
+    this.verticalMarkerIcon = const [],
     this.iconBackgroundColor,
     this.fillMarkerLines = false,
-    this.innerGridStrokeWidth,
-    this.filledMarkerLinesValues,
+    this.innerGridStrokeWidth = 0.0,
+    this.filledMarkerLinesValues = const [],
+    this.legendsRightLandscapeMode = false,
   }) : super(key: key);
 
   @override
@@ -198,6 +255,7 @@ class _GestureWrapperState extends State<_GestureWrapper> {
         fillMarkerLines: widget.fillMarkerLines,
         innerGridStrokeWidth: widget.innerGridStrokeWidth,
         filledMarkerLinesValues: widget.filledMarkerLinesValues,
+        legendsRightLandscapeMode: widget.legendsRightLandscapeMode,
       ),
       onTapDown: (tap) {
         _horizontalDragActive = true;
@@ -244,6 +302,7 @@ class _AnimatedChart extends AnimatedWidget {
   final bool? fillMarkerLines;
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
+  final bool? legendsRightLandscapeMode;
 
   _AnimatedChart(
     this._chart,
@@ -255,15 +314,16 @@ class _AnimatedChart extends AnimatedWidget {
     this.style,
     this.gridColor,
     this.toolTipColor,
-    this.legends,
+    this.legends = const [],
     this.showMarkerLines = false,
     this.verticalMarker = const [],
     this.verticalMarkerColor,
-    this.verticalMarkerIcon,
+    this.verticalMarkerIcon = const [],
     this.iconBackgroundColor,
     this.fillMarkerLines = false,
-    this.innerGridStrokeWidth,
-    this.filledMarkerLinesValues,
+    this.innerGridStrokeWidth = 0.0,
+    this.filledMarkerLinesValues = const [],
+    this.legendsRightLandscapeMode = false,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -289,6 +349,7 @@ class _AnimatedChart extends AnimatedWidget {
         fillMarkerLines: fillMarkerLines,
         innerGridStrokeWidth: innerGridStrokeWidth,
         filledMarkerLinesValues: filledMarkerLinesValues,
+        legendsRightLandscapeMode: legendsRightLandscapeMode,
       ),
       child: Container(),
     );
@@ -328,6 +389,7 @@ class ChartPainter extends CustomPainter {
   final bool? fillMarkerLines;
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
+  final bool? legendsRightLandscapeMode;
 
   TapText? tapText;
   final TextStyle? style;
@@ -344,15 +406,16 @@ class ChartPainter extends CustomPainter {
     this.tapText,
     required Color gridColor,
     required Color toolTipColor,
-    this.legends,
+    this.legends = const [],
     this.showMarkerLines = false,
     this.verticalMarker = const [],
     this.verticalMarkerColor,
-    this.verticalMarkerIcon,
+    this.verticalMarkerIcon = const [],
     this.iconBackgroundColor,
     this.fillMarkerLines = false,
-    this.innerGridStrokeWidth,
-    this.filledMarkerLinesValues,
+    this.innerGridStrokeWidth = 0.0,
+    this.filledMarkerLinesValues = const [],
+    this.legendsRightLandscapeMode = false,
   }) {
     tapText = tapText ?? _defaultTapText;
     _tooltipPainter.color = toolTipColor;
@@ -382,8 +445,12 @@ class ChartPainter extends CustomPainter {
       );
     }
 
-    if (verticalMarker != null) {
+    if (verticalMarker!.isNotEmpty) {
       _drawVerticalMarkers(size, canvas);
+    }
+
+    if (legends!.isNotEmpty && legendsRightLandscapeMode!) {
+      _drawLegends(size, canvas);
     }
   }
 
@@ -555,8 +622,7 @@ class ChartPainter extends CustomPainter {
             _chart.getPathCache(index)!, _progress);
       } else {
         path = _chart.getPathCache(index);
-
-        if (drawCircles && !chartLine.isMarkerLine) {
+        if (!chartLine.isMarkerLine) {
           points.forEach((p) {
             if (p.chartPoint is DateTimeChartPoint) {
               DateTimeChartPoint dateTimeChartPoint =
@@ -566,8 +632,11 @@ class ChartPainter extends CustomPainter {
                 _setVerticalMarkerChartPoints(dateTimeChartPoint);
               }
             }
-            canvas.drawCircle(
-                Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter);
+
+            if (drawCircles) {
+              canvas.drawCircle(
+                  Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter);
+            }
           });
         }
       }
@@ -628,6 +697,90 @@ class ChartPainter extends CustomPainter {
             Duration(minutes: 1)) {
       lastVerticalMarkerX = dateTimeChartPoint.x;
       lastVerticalMarkerY = dateTimeChartPoint.y;
+    }
+  }
+
+  void _drawLegends(Size size, Canvas canvas) {
+    assert(legends!.length ==
+            _chart.lines.where((line) => line.isMarkerLine).length ||
+        legends!.length ==
+            _chart.lines.where((line) => line.isMarkerLine == false).length ||
+        legends!.length == _chart.lines.length);
+
+    List<double> values = [];
+
+    if (_chart.seriesMap != null) {
+      _chart.seriesMap!.forEach((key, value) {
+        if (key == 0) {
+        } else {
+          value.forEach((highlightPoint) {
+            values.add(highlightPoint.chartPoint.y);
+          });
+        }
+      });
+    }
+
+    List<double> distinctValues = values.toSet().toList();
+
+    for (int i = legends!.length - 1; i >= 0; i--) {
+      final textStyle = legends?[i].style ??
+          TextStyle(
+            color: Colors.black,
+            fontSize: 10,
+            overflow: TextOverflow.clip,
+          );
+      final textSpan = TextSpan(
+        text: legends?[i].title,
+        style: textStyle.copyWith(fontSize: 10),
+      );
+      final textPainter = TextPainter(
+        text: textSpan,
+        textAlign: TextAlign.left,
+        textDirection: TextDirectionHelper.getDirection(),
+      );
+      textPainter.layout(
+        minWidth: 0,
+        maxWidth: size.width,
+      );
+
+      if (i > 0 &&
+          distinctValues[i] - distinctValues[i - 1] <= 10 &&
+          distinctValues[i] - distinctValues[i - 1] >= 0) {
+        distinctValues[i] = distinctValues[i] + 3;
+        distinctValues[i - 1] = distinctValues[i - 1] - 3;
+      }
+
+      if (legends![i].showLeadingLine!) {
+        canvas.drawLine(
+            Offset(size.width + 5, distinctValues[i]),
+            Offset(size.width + 15, distinctValues[i]),
+            Paint()
+              ..color = legends![i].color ?? Colors.blue
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2);
+      }
+
+      if (legends![i].icon != null) {
+        final iconPainter = TextPainter(
+          textAlign: TextAlign.left,
+          textDirection: TextDirectionHelper.getDirection(),
+        );
+
+        iconPainter.text = TextSpan(
+          text: String.fromCharCode(legends![i].icon!.icon!.codePoint),
+          style: TextStyle(
+            fontSize: 12.0,
+            fontFamily: legends![i].icon!.icon!.fontFamily,
+            color: legends![i].color ?? Colors.blue,
+          ),
+        );
+
+        iconPainter.layout();
+        iconPainter.paint(
+            canvas, Offset(size.width + 5, distinctValues[i] - 6));
+      }
+
+      textPainter.paint(canvas, Offset(size.width + 20, distinctValues[i] - 7));
     }
   }
 
@@ -763,7 +916,7 @@ class ChartPainter extends CustomPainter {
         }
       }
 
-      if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
+      if (verticalMarkerIcon!.isNotEmpty) {
         assert(verticalMarkerIcon!.length == verticalMarker!.length);
         TextPainter firstIconTp = TextPainter(
           textDirection: TextDirectionHelper.getDirection(),
@@ -835,7 +988,7 @@ class ChartPainter extends CustomPainter {
             0,
             size.width - _chart.xAxisOffsetPX - _chart.xAxisOffsetPXright,
             size.height - LineChart.axisOffsetPX),
-        _gridPainter);
+        _gridPainter..strokeWidth = 1);
 
     for (double c = 1; c <= _stepCount; c++) {
       canvas.drawLine(
@@ -872,8 +1025,15 @@ class Legend extends StatelessWidget {
   final Color? color;
   final Icon? icon;
   final TextStyle? style;
+  final bool? showLeadingLine;
 
-  const Legend({this.title, this.color, this.icon, this.style});
+  const Legend({
+    this.title,
+    this.color,
+    this.icon,
+    this.style,
+    this.showLeadingLine = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -881,13 +1041,16 @@ class Legend extends StatelessWidget {
       children: [
         icon != null
             ? icon!
-            : Container(
-                height: 3,
-                width: 15,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            : Visibility(
+                visible: showLeadingLine == true,
+                child: Container(
+                  height: 3,
+                  width: 15,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  ),
                 ),
               ),
         Text(
