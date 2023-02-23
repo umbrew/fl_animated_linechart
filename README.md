@@ -98,7 +98,7 @@ Example code with horizontal markerlines and legends:
   The length of the Legends list must to equal to the length of chartlines which have isMakerLine = true. <br/>
   
   When orientation of the screen is in landscape mode, it is possible to have the legends drawn on the right hand side instead of below the graph. 
-  Simplet set ``` legendsRightLandscapeMode: true ``` and define a double value that represents how much space you want on the right hand side for your legends ``` widthRightLandscapeMode: 70 ``` <br/>
+  Simply set ``` legendsRightLandscapeMode: true ``` <br/>
 
 ```dart 
       return Scaffold(
@@ -123,7 +123,6 @@ Example code with horizontal markerlines and legends:
                   Legend(title: 'Critical', color: Colors.red, showLeadingLine: true),
                   Legend(title: 'Warning', color: Colors.yellow, Icon(Icons.report_problem_rounded, size: 17, color: Colors.yellow)),
                 ],
-                widthRightLandscapeMode: 70,
                 legendsRightLandscapeMode: true,
               ),
             ),

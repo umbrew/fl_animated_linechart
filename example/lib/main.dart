@@ -218,15 +218,15 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                         ]
                       : [],
                   showMarkerLines: chartIndex == 3 ? true : false,
-                  verticalMarkerColor: chartIndex == 3 ? Colors.yellow : null,
+                  verticalMarkerColor: chartIndex == 3 ? Colors.red : null,
                   verticalMarker: [
-                    DateTime.parse('2012-02-27 12:54:00'),
+                    DateTime.parse('2012-02-27 13:08:00'),
                     DateTime.parse('2012-02-27 13:16:00')
                   ],
                   verticalMarkerIcon: [
                     Icon(
-                      Icons.report_problem_rounded,
-                      color: Colors.yellow,
+                      Icons.cancel_rounded,
+                      color: Colors.red,
                     ),
                     Icon(
                       Icons.check_circle_rounded,
@@ -234,7 +234,6 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
                     ),
                   ],
                   iconBackgroundColor: Colors.white,
-                  widthRightLandscapeMode: 70,
                   legendsRightLandscapeMode: true,
                 ), //Unique key to force animations
               )),

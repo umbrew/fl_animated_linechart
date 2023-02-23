@@ -33,7 +33,6 @@ class AnimatedLineChart extends StatefulWidget {
   final bool? fillMarkerLines;
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
-  final double? widthRightLandscapeMode;
   final bool? legendsRightLandscapeMode;
 
   const AnimatedLineChart(
@@ -52,7 +51,6 @@ class AnimatedLineChart extends StatefulWidget {
     this.fillMarkerLines = false,
     this.innerGridStrokeWidth = 0.0,
     this.filledMarkerLinesValues = const [],
-    this.widthRightLandscapeMode = 0.0,
     this.legendsRightLandscapeMode = false,
   }) : super(key: key);
 
@@ -91,9 +89,11 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
   Widget build(BuildContext context) {
     return OrientationBuilder(
       builder: (context, orientation) => orientation == Orientation.landscape &&
+              widget.legends != null &&
               widget.legends!.isNotEmpty &&
               widget.legendsRightLandscapeMode == true
           ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: LayoutBuilder(builder:
@@ -121,8 +121,32 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                     );
                   }),
                 ),
-                Container(
-                  width: widget.widthRightLandscapeMode,
+                Visibility(
+                  visible: widget.legends != null && widget.legends!.isNotEmpty,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 50.0),
+                    child: Wrap(
+                        direction: Axis.vertical,
+                        children: widget.legends!.map((legend) {
+                          assert(widget.legends!.length ==
+                                  widget.chart.lines
+                                      .where((line) => line.isMarkerLine)
+                                      .length ||
+                              widget.legends!.length ==
+                                  widget.chart.lines
+                                      .where(
+                                          (line) => line.isMarkerLine == false)
+                                      .length ||
+                              widget.legends!.length ==
+                                  widget.chart.lines.length);
+
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                                right: 4.0, top: 5, left: 4.0),
+                            child: legend,
+                          );
+                        }).toList()),
+                  ),
                 ),
               ],
             )
@@ -153,34 +177,34 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                     );
                   }),
                 ),
-                widget.legends!.isNotEmpty
-                    ? Wrap(
-                        direction: Axis.horizontal,
-                        children: widget.legends!.map((legend) {
-                          assert(widget.legends!.length ==
-                                  widget.chart.lines
-                                      .where((line) => line.isMarkerLine)
-                                      .length ||
-                              widget.legends!.length ==
-                                  widget.chart.lines
-                                      .where(
-                                          (line) => line.isMarkerLine == false)
-                                      .length ||
-                              widget.legends!.length ==
-                                  widget.chart.lines.length);
+                Visibility(
+                  visible: widget.legends != null && widget.legends!.isNotEmpty,
+                  child: Wrap(
+                      direction: Axis.horizontal,
+                      children: widget.legends!.map((legend) {
+                        assert(widget.legends!.length ==
+                                widget.chart.lines
+                                    .where((line) => line.isMarkerLine)
+                                    .length ||
+                            widget.legends!.length ==
+                                widget.chart.lines
+                                    .where((line) => line.isMarkerLine == false)
+                                    .length ||
+                            widget.legends!.length ==
+                                widget.chart.lines.length);
 
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 4.0, top: 5, left: 4.0),
-                                child: legend,
-                              ),
-                            ],
-                          );
-                        }).toList())
-                    : Container(),
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 4.0, top: 5, left: 4.0),
+                              child: legend,
+                            ),
+                          ],
+                        );
+                      }).toList()),
+                ),
               ],
             ),
     );
@@ -432,7 +456,8 @@ class ChartPainter extends CustomPainter {
 
     if (showMarkerLines! &&
         fillMarkerLines! &&
-        filledMarkerLinesValues != null) {
+        filledMarkerLinesValues != null &&
+        filledMarkerLinesValues!.isNotEmpty) {
       _drawShadedAreaBetweenLines(size, canvas);
     }
 
@@ -445,12 +470,8 @@ class ChartPainter extends CustomPainter {
       );
     }
 
-    if (verticalMarker!.isNotEmpty) {
+    if (verticalMarker != null && verticalMarker!.isNotEmpty) {
       _drawVerticalMarkers(size, canvas);
-    }
-
-    if (legends!.isNotEmpty && legendsRightLandscapeMode!) {
-      _drawLegends(size, canvas);
     }
   }
 
@@ -700,90 +721,6 @@ class ChartPainter extends CustomPainter {
     }
   }
 
-  void _drawLegends(Size size, Canvas canvas) {
-    assert(legends!.length ==
-            _chart.lines.where((line) => line.isMarkerLine).length ||
-        legends!.length ==
-            _chart.lines.where((line) => line.isMarkerLine == false).length ||
-        legends!.length == _chart.lines.length);
-
-    List<double> values = [];
-
-    if (_chart.seriesMap != null) {
-      _chart.seriesMap!.forEach((key, value) {
-        if (key == 0) {
-        } else {
-          value.forEach((highlightPoint) {
-            values.add(highlightPoint.chartPoint.y);
-          });
-        }
-      });
-    }
-
-    List<double> distinctValues = values.toSet().toList();
-
-    for (int i = legends!.length - 1; i >= 0; i--) {
-      final textStyle = legends?[i].style ??
-          TextStyle(
-            color: Colors.black,
-            fontSize: 10,
-            overflow: TextOverflow.clip,
-          );
-      final textSpan = TextSpan(
-        text: legends?[i].title,
-        style: textStyle.copyWith(fontSize: 10),
-      );
-      final textPainter = TextPainter(
-        text: textSpan,
-        textAlign: TextAlign.left,
-        textDirection: TextDirectionHelper.getDirection(),
-      );
-      textPainter.layout(
-        minWidth: 0,
-        maxWidth: size.width,
-      );
-
-      if (i > 0 &&
-          distinctValues[i] - distinctValues[i - 1] <= 10 &&
-          distinctValues[i] - distinctValues[i - 1] >= 0) {
-        distinctValues[i] = distinctValues[i] + 3;
-        distinctValues[i - 1] = distinctValues[i - 1] - 3;
-      }
-
-      if (legends![i].showLeadingLine!) {
-        canvas.drawLine(
-            Offset(size.width + 5, distinctValues[i]),
-            Offset(size.width + 15, distinctValues[i]),
-            Paint()
-              ..color = legends![i].color ?? Colors.blue
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 2);
-      }
-
-      if (legends![i].icon != null) {
-        final iconPainter = TextPainter(
-          textAlign: TextAlign.left,
-          textDirection: TextDirectionHelper.getDirection(),
-        );
-
-        iconPainter.text = TextSpan(
-          text: String.fromCharCode(legends![i].icon!.icon!.codePoint),
-          style: TextStyle(
-            fontSize: 12.0,
-            fontFamily: legends![i].icon!.icon!.fontFamily,
-            color: legends![i].color ?? Colors.blue,
-          ),
-        );
-
-        iconPainter.layout();
-        iconPainter.paint(
-            canvas, Offset(size.width + 5, distinctValues[i] - 6));
-      }
-
-      textPainter.paint(canvas, Offset(size.width + 20, distinctValues[i] - 7));
-    }
-  }
-
   void _drawShadedAreaBetweenLines(Size size, Canvas canvas) {
     assert(filledMarkerLinesValues!.length ==
         _chart.lines.where((line) => line.isMarkerLine).length);
@@ -826,7 +763,8 @@ class ChartPainter extends CustomPainter {
               Offset(_chart.xAxisOffsetPX, sortedList[i].middle),
               Offset(
                   size.width,
-                  sortedList[i] == sortedList.last
+                  sortedList[i].middle == distinctValues.last ||
+                          sortedList[i] == sortedList.last
                       ? size.height - LineChart.axisOffsetPX
                       : sortedList[i + 1].middle),
             ),
@@ -854,7 +792,7 @@ class ChartPainter extends CustomPainter {
           verticalMarkerPaint);
 
       // If there are two x values defined, draw a shaded area between the two vertical lines
-      if (verticalMarker?.length == 2) {
+      if (verticalMarker!.length == 2) {
         final lastVerticalMarker = lastVerticalMarkerX;
 
         canvas.drawLine(
@@ -879,7 +817,45 @@ class ChartPainter extends CustomPainter {
           Paint()..color = verticalMarkerPaint.color.withOpacity(0.3),
         );
 
-        if (verticalMarkerIcon?.length == 2) {
+        if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
+          assert(verticalMarkerIcon!.length == verticalMarker!.length);
+          TextPainter firstIconTp = TextPainter(
+            textDirection: TextDirectionHelper.getDirection(),
+          );
+
+          firstIconTp.text = TextSpan(
+            text:
+                String.fromCharCode(verticalMarkerIcon!.first.icon!.codePoint),
+            style: TextStyle(
+              fontSize: 17.0,
+              fontFamily: verticalMarkerIcon!.first.icon!.fontFamily,
+              color: verticalMarkerIcon!.first.color ?? _gridPainter.color,
+            ),
+          );
+
+          firstIconTp.layout();
+
+          if (iconBackgroundColor != null) {
+            // Setting the background color of the icon
+            canvas.drawCircle(
+                Offset(
+                  firstVerticalMarkerX,
+                  firstVerticalMarkerY,
+                ),
+                4.5,
+                Paint()..color = iconBackgroundColor ?? Colors.white);
+          }
+
+          firstIconTp.paint(
+            canvas,
+            Offset(
+              firstVerticalMarkerX - 9,
+              firstVerticalMarkerY - 9,
+            ),
+          );
+        }
+
+        if (verticalMarkerIcon != null && verticalMarkerIcon!.length == 2) {
           TextPainter lastIconTp = TextPainter(
             textDirection: TextDirectionHelper.getDirection(),
           );
@@ -888,8 +864,8 @@ class ChartPainter extends CustomPainter {
             text: String.fromCharCode(verticalMarkerIcon!.last.icon!.codePoint),
             style: TextStyle(
               fontSize: 17.0,
-              fontFamily: verticalMarkerIcon?.last.icon!.fontFamily,
-              color: verticalMarkerIcon?.last.color ?? _gridPainter.color,
+              fontFamily: verticalMarkerIcon!.last.icon!.fontFamily,
+              color: verticalMarkerIcon!.last.color ?? _gridPainter.color,
             ),
           );
 
@@ -914,43 +890,6 @@ class ChartPainter extends CustomPainter {
             ),
           );
         }
-      }
-
-      if (verticalMarkerIcon!.isNotEmpty) {
-        assert(verticalMarkerIcon!.length == verticalMarker!.length);
-        TextPainter firstIconTp = TextPainter(
-          textDirection: TextDirectionHelper.getDirection(),
-        );
-
-        firstIconTp.text = TextSpan(
-          text: String.fromCharCode(verticalMarkerIcon!.first.icon!.codePoint),
-          style: TextStyle(
-            fontSize: 17.0,
-            fontFamily: verticalMarkerIcon?.first.icon!.fontFamily,
-            color: verticalMarkerIcon?.first.color ?? _gridPainter.color,
-          ),
-        );
-
-        firstIconTp.layout();
-
-        if (iconBackgroundColor != null) {
-          // Setting the background color of the icon
-          canvas.drawCircle(
-              Offset(
-                firstVerticalMarkerX,
-                firstVerticalMarkerY,
-              ),
-              4.5,
-              Paint()..color = iconBackgroundColor ?? Colors.white);
-        }
-
-        firstIconTp.paint(
-          canvas,
-          Offset(
-            firstVerticalMarkerX - 9,
-            firstVerticalMarkerY - 9,
-          ),
-        );
       }
     }
   }

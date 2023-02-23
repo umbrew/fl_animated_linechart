@@ -3,6 +3,7 @@ import 'package:fl_animated_linechart/common/pair.dart';
 import 'package:fl_animated_linechart/fl_animated_linechart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'dart:ui' as ui;
 
 import '../testHelpers/widget_test_helper.dart';
 
@@ -696,7 +697,7 @@ void main() {
         matchesGoldenFile('animatedLineChartShadedAreaBetweenMarkerLines.png'));
   });
 
-  testWidgets('Test shaded area between marker lines',
+  testWidgets('Test legends on right hand side when landscape mode',
       (WidgetTester tester) async {
     DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
@@ -708,26 +709,31 @@ void main() {
     line[start.add(Duration(minutes: 10))] = 1;
 
     Map<DateTime, double> upperCritical = {};
-    upperCritical[start] = 2;
-    upperCritical[start.add(Duration(minutes: 10))] = 2;
+    upperCritical[start] = 10;
+    upperCritical[start.add(Duration(minutes: 10))] = 10;
+
+    Map<DateTime, double> lowerCritical = {};
+    lowerCritical[start] = 0;
+    lowerCritical[start.add(Duration(minutes: 10))] = 0;
 
     Map<DateTime, double> upperWarning = {};
-    upperWarning[start] = 1.7;
-    upperWarning[start.add(Duration(minutes: 7))] = 1.7;
+    upperWarning[start] = 9.9;
+    upperWarning[start.add(Duration(minutes: 7))] = 9.9;
+
+    Map<DateTime, double> lowerWarning = {};
+    lowerWarning[start] = 0.4;
+    lowerWarning[start.add(Duration(minutes: 10))] = 0.4;
 
     series.add(line);
     series.add(upperCritical);
     series.add(upperWarning);
+    series.add(lowerWarning);
+    series.add(lowerCritical);
 
-    LineChart lineChart = LineChart.fromDateTimeMaps(series, [
-      Colors.pink,
-      Colors.red,
-      Colors.yellow,
-    ], [
-      'P',
-      'P',
-      'P',
-    ]);
+    LineChart lineChart = LineChart.fromDateTimeMaps(
+        series,
+        [Colors.pink, Colors.red, Colors.yellow, Colors.yellow, Colors.red],
+        ['P', 'P', 'P', 'P', 'P']);
 
     lineChart.initialize(
       200,
@@ -737,40 +743,56 @@ void main() {
     );
     lineChart.lines[1].isMarkerLine = true;
     lineChart.lines[2].isMarkerLine = true;
+    lineChart.lines[3].isMarkerLine = true;
+    lineChart.lines[4].isMarkerLine = true;
 
     await tester.pumpWidget(
-      buildTestableWidget(
-        AnimatedLineChart(
-          lineChart,
-          gridColor: Colors.black54,
-          textStyle: TextStyle(fontSize: 10, color: Colors.black54),
-          toolTipColor: Colors.white,
-          showMarkerLines: true,
-          fillMarkerLines: true,
-          filledMarkerLinesValues: [
-            MaxMin.MAX,
-            MaxMin.MAX,
-          ],
-          legends: [
-            Legend(
-              title: 'Max: 2',
-              color: Colors.red,
-              showLeadingLine: true,
-              style: TextStyle(
-                color: Colors.black,
+      MediaQuery(
+        data: MediaQueryData.fromWindow(ui.window)
+            .copyWith(size: const Size(600.0, 800.0)),
+        child: buildTestableWidget(
+          AnimatedLineChart(
+            lineChart,
+            gridColor: Colors.black54,
+            textStyle: TextStyle(fontSize: 10, color: Colors.black54),
+            toolTipColor: Colors.white,
+            showMarkerLines: true,
+            legends: [
+              Legend(
+                title: 'Max: 10',
+                color: Colors.red,
+                showLeadingLine: true,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
               ),
-            ),
-            Legend(
-              title: 'High: 1.7',
-              color: Colors.yellow,
-              showLeadingLine: true,
-              style: TextStyle(
-                color: Colors.black,
+              Legend(
+                title: 'High: 9.9',
+                color: Colors.yellow,
+                icon: Icon(Icons.report_problem_rounded),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
               ),
-            ),
-          ],
-          widthRightLandscapeMode: 70,
-          legendsRightLandscapeMode: true,
+              Legend(
+                title: 'Low',
+                color: Colors.yellow,
+                icon: Icon(Icons.report_problem_rounded),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              Legend(
+                title: 'Min',
+                color: Colors.red,
+                showLeadingLine: true,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            ],
+            legendsRightLandscapeMode: true,
+          ),
         ),
       ),
     );
