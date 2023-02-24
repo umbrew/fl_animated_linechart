@@ -128,18 +128,7 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                     child: Wrap(
                         direction: Axis.vertical,
                         children: widget.legends!.map((legend) {
-                          assert(widget.legends!.length ==
-                                  widget.chart.lines
-                                      .where((line) => line.isMarkerLine)
-                                      .length ||
-                              widget.legends!.length ==
-                                  widget.chart.lines
-                                      .where(
-                                          (line) => line.isMarkerLine == false)
-                                      .length ||
-                              widget.legends!.length ==
-                                  widget.chart.lines.length);
-
+                          assertLegends();
                           return Padding(
                             padding: const EdgeInsets.only(
                                 right: 4.0, top: 5, left: 4.0),
@@ -182,16 +171,7 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                   child: Wrap(
                       direction: Axis.horizontal,
                       children: widget.legends!.map((legend) {
-                        assert(widget.legends!.length ==
-                                widget.chart.lines
-                                    .where((line) => line.isMarkerLine)
-                                    .length ||
-                            widget.legends!.length ==
-                                widget.chart.lines
-                                    .where((line) => line.isMarkerLine == false)
-                                    .length ||
-                            widget.legends!.length ==
-                                widget.chart.lines.length);
+                        assertLegends();
 
                         return Row(
                           mainAxisSize: MainAxisSize.min,
@@ -208,6 +188,16 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
               ],
             ),
     );
+  }
+
+  void assertLegends() {
+    assert(widget.legends!.length ==
+            widget.chart.lines.where((line) => line.isMarkerLine).length ||
+        widget.legends!.length ==
+            widget.chart.lines
+                .where((line) => line.isMarkerLine == false)
+                .length ||
+        widget.legends!.length == widget.chart.lines.length);
   }
 }
 
