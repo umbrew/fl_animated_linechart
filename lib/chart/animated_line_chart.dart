@@ -68,11 +68,9 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 700));
 
-    Animation curve =
-        CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    Animation curve = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
-    _animation =
-        Tween(begin: 0.0, end: 1.0).animate(curve as Animation<double>);
+    _animation = Tween(begin: 0.0, end: 1.0).animate(curve as Animation<double>);
 
     _controller.forward();
 
@@ -505,10 +503,8 @@ class ChartPainter extends CustomPainter {
 
     highlights.forEach((highlight) {
       if (!_chart.lines[index].isMarkerLine) {
-        canvas.drawCircle(
-            Offset(highlight.chartPoint.x, highlight.chartPoint.y),
-            5,
-            _linePainter);
+        canvas.drawCircle(Offset(highlight.chartPoint.x, highlight.chartPoint.y),
+            5, _linePainter);
       }
 
       String prefix = '';
@@ -516,8 +512,7 @@ class ChartPainter extends CustomPainter {
       if (highlight.chartPoint is DateTimeChartPoint) {
         DateTimeChartPoint dateTimeChartPoint =
             highlight.chartPoint as DateTimeChartPoint;
-        prefix =
-            _formatMonthDayHoursMinutes.format(dateTimeChartPoint.dateTime);
+        prefix = _formatMonthDayHoursMinutes.format(dateTimeChartPoint.dateTime);
       }
 
       TextSpan span = TextSpan(
@@ -781,14 +776,50 @@ class ChartPainter extends CustomPainter {
           Offset(firstVerticalMarker, size.height - LineChart.axisOffsetPX),
           verticalMarkerPaint);
 
+      if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
+        assert(verticalMarkerIcon!.length == verticalMarker!.length);
+        TextPainter firstIconTp = TextPainter(
+          textDirection: TextDirectionHelper.getDirection(),
+        );
+
+        firstIconTp.text = TextSpan(
+          text: String.fromCharCode(verticalMarkerIcon!.first.icon!.codePoint),
+          style: TextStyle(
+            fontSize: 17.0,
+            fontFamily: verticalMarkerIcon?.first.icon!.fontFamily,
+            color: verticalMarkerIcon?.first.color ?? _gridPainter.color,
+          ),
+        );
+
+        firstIconTp.layout();
+
+        if (iconBackgroundColor != null) {
+          // Setting the background color of the icon
+          canvas.drawCircle(
+              Offset(
+                firstVerticalMarkerX,
+                firstVerticalMarkerY,
+              ),
+              4.5,
+              Paint()..color = iconBackgroundColor ?? Colors.white);
+        }
+
+        firstIconTp.paint(
+          canvas,
+          Offset(
+            firstVerticalMarkerX - 9,
+            firstVerticalMarkerY - 9,
+          ),
+        );
+      }
+
       // If there are two x values defined, draw a shaded area between the two vertical lines
       if (verticalMarker!.length == 2) {
         final lastVerticalMarker = lastVerticalMarkerX;
 
         canvas.drawLine(
             Offset(lastVerticalMarker - 2, 0),
-            Offset(
-                lastVerticalMarker - 2, size.height - LineChart.axisOffsetPX),
+            Offset(lastVerticalMarker - 2, size.height - LineChart.axisOffsetPX),
             Paint()
               ..color = Colors.grey
               ..strokeWidth = 1);
@@ -807,45 +838,7 @@ class ChartPainter extends CustomPainter {
           Paint()..color = verticalMarkerPaint.color.withOpacity(0.3),
         );
 
-        if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
-          assert(verticalMarkerIcon!.length == verticalMarker!.length);
-          TextPainter firstIconTp = TextPainter(
-            textDirection: TextDirectionHelper.getDirection(),
-          );
-
-          firstIconTp.text = TextSpan(
-            text:
-                String.fromCharCode(verticalMarkerIcon!.first.icon!.codePoint),
-            style: TextStyle(
-              fontSize: 17.0,
-              fontFamily: verticalMarkerIcon!.first.icon!.fontFamily,
-              color: verticalMarkerIcon!.first.color ?? _gridPainter.color,
-            ),
-          );
-
-          firstIconTp.layout();
-
-          if (iconBackgroundColor != null) {
-            // Setting the background color of the icon
-            canvas.drawCircle(
-                Offset(
-                  firstVerticalMarkerX,
-                  firstVerticalMarkerY,
-                ),
-                4.5,
-                Paint()..color = iconBackgroundColor ?? Colors.white);
-          }
-
-          firstIconTp.paint(
-            canvas,
-            Offset(
-              firstVerticalMarkerX - 9,
-              firstVerticalMarkerY - 9,
-            ),
-          );
-        }
-
-        if (verticalMarkerIcon != null && verticalMarkerIcon!.length == 2) {
+        if (verticalMarkerIcon?.length == 2) {
           TextPainter lastIconTp = TextPainter(
             textDirection: TextDirectionHelper.getDirection(),
           );
@@ -854,8 +847,8 @@ class ChartPainter extends CustomPainter {
             text: String.fromCharCode(verticalMarkerIcon!.last.icon!.codePoint),
             style: TextStyle(
               fontSize: 17.0,
-              fontFamily: verticalMarkerIcon!.last.icon!.fontFamily,
-              color: verticalMarkerIcon!.last.color ?? _gridPainter.color,
+              fontFamily: verticalMarkerIcon?.last.icon!.fontFamily,
+              color: verticalMarkerIcon?.last.color ?? _gridPainter.color,
             ),
           );
 
