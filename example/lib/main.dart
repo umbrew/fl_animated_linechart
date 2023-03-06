@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -34,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
 
   @override
   Widget build(BuildContext context) {
+    String? title = widget.title ?? '';
     Map<DateTime, double> line1 = createLine2();
     Map<DateTime, double> line2 = createLine2_2();
     Map<DateTime, double> line3 = yAxisUpperMaxMarkerLine();
@@ -97,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Container(
         child: Column(
