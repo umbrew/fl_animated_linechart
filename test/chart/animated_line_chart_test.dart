@@ -3,7 +3,6 @@ import 'package:fl_animated_linechart/common/pair.dart';
 import 'package:fl_animated_linechart/fl_animated_linechart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'dart:ui' as ui;
 
 import '../testHelpers/widget_test_helper.dart';
 
@@ -566,9 +565,6 @@ void main() {
   });
 
   testWidgets('Test legends showing', (WidgetTester tester) async {
-    final TestWidgetsFlutterBinding binding =
-        TestWidgetsFlutterBinding.ensureInitialized();
-
     DateTime start = DateTime.parse('2012-02-27 13:27:00');
 
     List<Map<DateTime, double>> series = [];
@@ -589,9 +585,8 @@ void main() {
       TextStyle(
           color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
     );
-
-    binding.window.physicalSizeTestValue = Size(400, 800);
-    binding.window.devicePixelRatioTestValue = 1.0;
+    tester.view.physicalSize = Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
 
     await tester.pumpWidget(
       buildTestableWidget(
@@ -618,7 +613,7 @@ void main() {
     await expectLater(find.byType(AnimatedLineChart),
         matchesGoldenFile('animatedLineChartWithLegends.png'));
 
-    binding.window.physicalSizeTestValue =
+    tester.view.physicalSize =
         Size(800, 600); //restting size of device screen back to default value
   });
 
@@ -748,7 +743,8 @@ void main() {
 
     await tester.pumpWidget(
       MediaQuery(
-        data: MediaQueryData.fromWindow(ui.window)
+        data: MediaQueryData.fromView(
+                WidgetsBinding.instance.platformDispatcher.views.single)
             .copyWith(size: const Size(600.0, 800.0)),
         child: buildTestableWidget(
           AnimatedLineChart(

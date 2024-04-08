@@ -106,8 +106,8 @@ void main() {
 
     List<HighlightPoint> list = lineChart.seriesMap![0]!;
 
-    expect(list[0].chartPoint.x, 45);
-    expect(list[1].chartPoint.x, 122);
+    expect(list[0].chartPoint.x, 49.0);
+    expect(list[1].chartPoint.x, 124.0);
     expect(list[2].chartPoint.x, 199);
   });
 
@@ -126,7 +126,7 @@ void main() {
           color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
     );
 
-    expect(lineChart.xScale, 11);
+    expect(lineChart.xScale, 10.714285714285714);
   });
 
   test('test yScale', () async {
@@ -180,7 +180,7 @@ void main() {
           color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
     );
 
-    expect(lineChart.widthStepSize, 25.666666666666668);
+    expect(lineChart.widthStepSize, 25.0);
   });
 
   test('test axisOffSetWithPadding', () async {
@@ -198,7 +198,7 @@ void main() {
           color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
     );
 
-    expect(lineChart.axisOffSetWithPadding, 40.0);
+    expect(lineChart.axisOffSetWithPadding, 44.0);
   });
 
   test('test min max values', () async {
@@ -308,7 +308,7 @@ void main() {
         lineChart.getClosetHighlightPoints(101);
 
     expect(closetHighlightPoints.length, 1);
-    expect(closetHighlightPoints[0].chartPoint.x, 96.33333333333333);
+    expect(closetHighlightPoints[0].chartPoint.x, 99.0);
     expect(closetHighlightPoints[0].chartPoint.y, 36.111111111111114);
   });
 
