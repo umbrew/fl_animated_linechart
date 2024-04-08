@@ -91,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> with FakeChartSeries {
       chart.lines[4].isMarkerLine = true;
     }
     final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+      textStyle: TextStyle(fontSize: 13),
       shape: RoundedRectangleBorder(
           side: BorderSide(color: Colors.black45),
           borderRadius: BorderRadius.all(Radius.circular(3))),
