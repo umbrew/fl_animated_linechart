@@ -799,4 +799,47 @@ void main() {
     await expectLater(find.byType(AnimatedLineChart),
         matchesGoldenFile('animatedLineChartLandscapeModeLegends.png'));
   });
+
+  testWidgets('Test showing date names on x-axis', (WidgetTester tester) async {
+    DateTime start = DateTime.parse('2012-02-27 13:27:00');
+
+    List<Map<DateTime, double>> series = [];
+    Map<DateTime, double> line = {};
+    line[start] = 1.2;
+    line[start.add(Duration(days: 10))] = 0.5;
+    line[start.add(Duration(days: 70))] = 1.7;
+    line[start.add(Duration(days: 100))] = 1;
+
+    series.add(line);
+
+    LineChart lineChart = LineChart.fromDateTimeMaps(
+        series, [Colors.pink], ['P'],
+        showMonthsName: true);
+
+    lineChart.initialize(
+      200,
+      100,
+      TextStyle(
+          color: Colors.grey[800], fontSize: 11.0, fontWeight: FontWeight.w200),
+    );
+
+    await tester.pumpWidget(
+      buildTestableWidget(
+        AnimatedLineChart(
+          lineChart,
+          gridColor: Colors.black54,
+          textStyle: TextStyle(fontSize: 10, color: Colors.black54),
+          toolTipColor: Colors.white,
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle(Duration(seconds: 1));
+    await tester.pump(Duration(seconds: 1));
+
+    expect(find.text('June'), findsOneWidget);
+
+    /*  await expectLater(
+        find.byType(AnimatedLineChart), matchesGoldenFile('test.png')); */
+  });
 }

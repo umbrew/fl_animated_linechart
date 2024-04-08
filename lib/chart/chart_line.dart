@@ -14,7 +14,7 @@ class ChartLine {
   double _maxY = 0;
 
   ChartLine(this.points, this.color, this.unit, {this.isMarkerLine = false}) {
-    if (points.length > 0) {
+    if (points.isNotEmpty) {
       _minX = points[0].x;
       _maxX = points[0].x;
       _minY = points[0].y;
