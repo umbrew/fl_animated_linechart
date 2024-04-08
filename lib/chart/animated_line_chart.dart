@@ -990,7 +990,7 @@ class ChartPainter extends CustomPainter {
   }
 
   void _drawUnits(Canvas canvas, Size size, TextStyle? style) {
-    if (_chart.indexToUnit.length > 0) {
+    if (_chart.indexToUnit.isNotEmpty) {
       TextSpan span = TextSpan(
           style: style, text: _chart.yAxisName ?? _chart.indexToUnit[0]);
       TextPainter tp = TextPainter(
