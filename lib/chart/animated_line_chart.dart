@@ -19,21 +19,102 @@ typedef TapText = String Function(String prefix, double y, String unit);
 enum MaxMin { MAX, MIN }
 
 class AnimatedLineChart extends StatefulWidget {
+  /// [LineChart] is in charge of defining the lines which will be drawn in the graph.
   final LineChart chart;
+
+  /// The text being displayed in the tooltip.
+  ///
+  /// Defaults to ```'$x_value: ${y_value.toStringAsFixed(1)} $unit'```, but can be customized.
+  ///
+  /// Example:
+  /// ```dart
+  /// AnimatedLineChart(
+  /// lineChart,
+  /// tapText: (prefix, value, unit) => '$prefix: $value $unit'
+  /// ```
   final TapText? tapText;
+
+  /// Style of tooltip text
   final TextStyle? textStyle;
+
+  /// Background color of tooltip
   final Color toolTipColor;
+
+  /// Color of grid
   final Color gridColor;
+
+  /// List of legends.
+  ///
+  /// If left empty or null, no lengends will be shown at bottom of chart.
+  ///
+  /// The order of defined legends should be the same order of defined lines in [LineChart] to match index,
   final List<Legend>? legends;
+
+  /// Whether markerlines should be shown. Default to 'false'.
   final bool? showMarkerLines;
+
+  /// A list of vertical lines can be defined.
+  /// ```dart
+  /// AnimatedLineChart(
+  /// lineChart,
+  /// verticalMarker: [DateTime.parse('2012-02-27 13:08:00')]
+  /// ```
+  ///
+  /// It is possible to define a maximum of two vertical markerlines.
   final List<DateTime> verticalMarker;
+
+  /// The color of the vertical markerline.
   final Color? verticalMarkerColor;
+
+  /// Icons can be defined, which will be drawn on the vertical markerline if 'verticalMarker' is defined.
+  ///
+  /// The lenght of 'verticalMarkerIcon' must be equal to the length of 'verticalMarker'.
   final List<Icon>? verticalMarkerIcon;
+
+  /// The background color of the icons defined for 'verticalMarkerIcon'. This can be used for unfilled icons.
   final Color? iconBackgroundColor;
+
+  /// Whether shaded areas between the defined markerlines should be shown or not. If true, he shaded area will be in the same color as the markerline.
   final bool? fillMarkerLines;
+
+  /// Determines the stroke width of the inner grid of the chart.
   final double? innerGridStrokeWidth;
+
+  /// Adds shaded area between markerlines: It is possible to have shaded areas between the defined markerlines
+  ///
+  /// It is important that the order of enums in the List<MaxMin> filledMarkerLinesValues matches the order of defined markerlines to be shown in the graph.
+  /// Enums with the value MaxMin.MAX will draw to the top if there is only one markerline defined as MAX, otherwise it will draw from i - 1 where enum values are MAX.
+  ///
+  /// Example:
+  /// ```dart
+  /// AnimatedLineChart(
+  /// lineChart,
+  /// filledMarkerLinesValues:[
+  /// MaxMin.MAX,
+  /// MaxMin.MAX,
+  /// MaxMin.MIN,
+  /// MaxMin.MIN],
+  /// ```
+  ///
+  /// For the area between the markerlines to be filled, remember to set 'fillMarkerLines' to true.
   final List<MaxMin>? filledMarkerLinesValues;
+
+  /// Whether legends should be drawn on the right-hand side of the graph when in landscape mode.
+  ///
+  /// Default to false.
   final bool? legendsRightLandscapeMode;
+
+  /// Whether color of tooltip text should be the same color as defined for [LineChart] color.
+  ///
+  /// Defaults to false.
+  ///
+  /// This is especially useful when there are multiple lines in the chart to determine what value in the tooltip belongs to which line.
+  final bool? useLineColorsInTooltip;
+
+  /// Whether date shown in tooltip should include minutes or not.
+  ///
+  /// Defaults to 'true'.
+  final bool? showMinutesInTooltip;
 
   const AnimatedLineChart(
     this.chart, {
@@ -52,6 +133,8 @@ class AnimatedLineChart extends StatefulWidget {
     this.innerGridStrokeWidth = 0.0,
     this.filledMarkerLinesValues = const [],
     this.legendsRightLandscapeMode = false,
+    this.useLineColorsInTooltip = false,
+    this.showMinutesInTooltip = true,
   }) : super(key: key);
 
   @override
@@ -118,6 +201,8 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                       filledMarkerLinesValues: widget.filledMarkerLinesValues,
                       legendsRightLandscapeMode:
                           widget.legendsRightLandscapeMode,
+                      useLineColorsInTooltip: widget.useLineColorsInTooltip,
+                      showMinutesInTooltip: widget.showMinutesInTooltip,
                     );
                   }),
                 ),
@@ -163,6 +248,8 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                       innerGridStrokeWidth: widget.innerGridStrokeWidth,
                       filledMarkerLinesValues: widget.filledMarkerLinesValues,
                       legendsRightLandscapeMode: false,
+                      useLineColorsInTooltip: widget.useLineColorsInTooltip,
+                      showMinutesInTooltip: widget.showMinutesInTooltip,
                     );
                   }),
                 ),
@@ -219,6 +306,8 @@ class _GestureWrapper extends StatefulWidget {
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
   final bool? legendsRightLandscapeMode;
+  final bool? useLineColorsInTooltip;
+  final bool? showMinutesInTooltip;
 
   const _GestureWrapper(
     this._chart,
@@ -238,6 +327,8 @@ class _GestureWrapper extends StatefulWidget {
     this.innerGridStrokeWidth = 0.0,
     this.filledMarkerLinesValues = const [],
     this.legendsRightLandscapeMode = false,
+    this.useLineColorsInTooltip = false,
+    this.showMinutesInTooltip = true,
   }) : super(key: key);
 
   @override
@@ -270,6 +361,8 @@ class _GestureWrapperState extends State<_GestureWrapper> {
         innerGridStrokeWidth: widget.innerGridStrokeWidth,
         filledMarkerLinesValues: widget.filledMarkerLinesValues,
         legendsRightLandscapeMode: widget.legendsRightLandscapeMode,
+        useLineColorsInTooltip: widget.useLineColorsInTooltip,
+        showMinutesInTooltip: widget.showMinutesInTooltip,
       ),
       onTapDown: (tap) {
         _horizontalDragActive = true;
@@ -317,6 +410,8 @@ class _AnimatedChart extends AnimatedWidget {
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
   final bool? legendsRightLandscapeMode;
+  final bool? useLineColorsInTooltip;
+  final bool? showMinutesInTooltip;
 
   _AnimatedChart(
     this._chart,
@@ -338,6 +433,8 @@ class _AnimatedChart extends AnimatedWidget {
     this.innerGridStrokeWidth = 0.0,
     this.filledMarkerLinesValues = const [],
     this.legendsRightLandscapeMode = false,
+    this.useLineColorsInTooltip = false,
+    this.showMinutesInTooltip = true,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -364,6 +461,8 @@ class _AnimatedChart extends AnimatedWidget {
         innerGridStrokeWidth: innerGridStrokeWidth,
         filledMarkerLinesValues: filledMarkerLinesValues,
         legendsRightLandscapeMode: legendsRightLandscapeMode,
+        useLineColorsInTooltip: useLineColorsInTooltip,
+        showMinutesInTooltip: showMinutesInTooltip,
       ),
       child: Container(),
     );
@@ -374,6 +473,7 @@ class ChartPainter extends CustomPainter {
   static final double _stepCount = 5;
 
   final DateFormat _formatMonthDayHoursMinutes = DateFormat('dd/MM kk:mm');
+  final DateFormat _formatMonthDayYear = DateFormat.yMd();
 
   final Paint _gridPainter = Paint()
     ..style = PaintingStyle.stroke
@@ -404,6 +504,8 @@ class ChartPainter extends CustomPainter {
   final double? innerGridStrokeWidth;
   final List<MaxMin>? filledMarkerLinesValues;
   final bool? legendsRightLandscapeMode;
+  final bool? useLineColorsInTooltip;
+  final bool? showMinutesInTooltip;
 
   TapText? tapText;
   final TextStyle? style;
@@ -430,6 +532,8 @@ class ChartPainter extends CustomPainter {
     this.innerGridStrokeWidth = 0.0,
     this.filledMarkerLinesValues = const [],
     this.legendsRightLandscapeMode = false,
+    this.useLineColorsInTooltip = false,
+    this.showMinutesInTooltip = true,
   }) {
     tapText = tapText ?? _defaultTapText;
     _tooltipPainter.color = toolTipColor;
@@ -455,7 +559,6 @@ class ChartPainter extends CustomPainter {
       _drawHighlights(
         size,
         canvas,
-        _chart.tapTextFontWeight,
         _tooltipPainter.color,
       );
     }
@@ -468,8 +571,7 @@ class ChartPainter extends CustomPainter {
   var brightness =
       SchedulerBinding.instance.platformDispatcher.platformBrightness;
 
-  void _drawHighlights(Size size, Canvas canvas, FontWeight? tapTextFontWeight,
-      Color onTapLineColor) {
+  void _drawHighlights(Size size, Canvas canvas, Color onTapLineColor) {
     _linePainter.color = onTapLineColor;
 
     if (_horizontalDragPosition > LineChart.axisOffsetPX &&
@@ -516,12 +618,16 @@ class ChartPainter extends CustomPainter {
       if (highlight.chartPoint is DateTimeChartPoint) {
         DateTimeChartPoint dateTimeChartPoint =
             highlight.chartPoint as DateTimeChartPoint;
-        prefix =
-            _formatMonthDayHoursMinutes.format(dateTimeChartPoint.dateTime);
+        prefix = showMinutesInTooltip!
+            ? _formatMonthDayHoursMinutes.format(dateTimeChartPoint.dateTime)
+            : _formatMonthDayYear.format(dateTimeChartPoint.dateTime);
       }
 
       TextSpan span = TextSpan(
-          style: style,
+          style: style!.copyWith(
+              color: useLineColorsInTooltip == true
+                  ? _chart.lines[index].color
+                  : null),
           text: tapText!(
             prefix,
             highlight.yValue,
