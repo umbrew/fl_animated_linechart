@@ -15,7 +15,17 @@ import 'package:intl/intl.dart';
 class LineChart {
   final DateFormat _formatHoursMinutes;
   final DateFormat _formatDayMonth;
+  final DateFormat _formatMonths;
   final double _effectiveChartHeightRatio = 5 / 6;
+
+  /// Whether only the name of the month should be shown on the x-axis.
+  ///
+  /// Defaults to 'false'. Is mostly useful when date range in graph is one year.
+  final bool? showMonthsName;
+
+  /// This is no longer being used.
+  ///
+  /// To defined the font weight of the tooltip text, you can define [TextStyle] textStyle in [AnimatedLineChart].
   final FontWeight? tapTextFontWeight;
   //The lines / points should only draw to 5/6 from the top of the chart area
 
@@ -48,23 +58,33 @@ class LineChart {
   String? yAxisName;
 
   LineChart(this.lines, this.fromTo,
-      {this.tapTextFontWeight,
+      {this.showMonthsName,
+      this.tapTextFontWeight,
       this.yAxisName,
       String formatHoursMinutes = 'kk:mm',
-      String formatDayMonth = 'dd/MM'})
+      String formatDayMonth = 'dd/MM',
+      String formatMonths = 'MMMM'})
       : this._formatHoursMinutes = DateFormat(formatHoursMinutes),
-        this._formatDayMonth = DateFormat(formatDayMonth);
+        this._formatDayMonth = DateFormat(formatDayMonth),
+        this._formatMonths = DateFormat(formatMonths);
 
-  factory LineChart.fromDateTimeMaps(List<Map<DateTime, double>> series,
-      List<Color> colors, List<String> units,
-      {FontWeight? tapTextFontWeight, String? yAxisName}) {
+  factory LineChart.fromDateTimeMaps(
+    List<Map<DateTime, double>> series,
+    List<Color> colors,
+    List<String> units, {
+    FontWeight? tapTextFontWeight,
+    bool? showMonthsName,
+    String? yAxisName,
+  }) {
     assert(series.length == colors.length);
     assert(series.length == units.length);
 
     Pair<List<ChartLine>, Dates> convertFromDateMaps =
         DateTimeSeriesConverter.convertFromDateMaps(series, colors, units);
     return LineChart(convertFromDateMaps.left, convertFromDateMaps.right,
-        tapTextFontWeight: tapTextFontWeight, yAxisName: yAxisName);
+        tapTextFontWeight: tapTextFontWeight,
+        showMonthsName: showMonthsName,
+        yAxisName: yAxisName);
   }
 
   double get width => _maxX - _minX;
@@ -240,6 +260,8 @@ class LineChart {
   String _formatDateTime(DateTime dateTime, Duration duration) {
     if (duration.inHours < 30) {
       return _formatHoursMinutes.format(dateTime.toLocal());
+    } else if (showMonthsName == true) {
+      return _formatMonths.format(dateTime.toLocal());
     } else {
       return _formatDayMonth.format(dateTime.toLocal());
     }
