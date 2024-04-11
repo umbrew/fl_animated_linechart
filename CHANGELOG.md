@@ -1,3 +1,8 @@
+## [1.2.0]
+* Ability to set tooltip text to same color as lines to easily determine which value in the tooltip belongs to which line, when there are multiple lines in the graph.
+* Ability to display month names on the x-axis. 
+* Ability to exclude minutes in tooltip.
+
 ## [1.1.9]
 * dart format files to pass static analysis
 
