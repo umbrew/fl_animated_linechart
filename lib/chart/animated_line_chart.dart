@@ -74,7 +74,7 @@ class AnimatedLineChart extends StatefulWidget {
   /// The background color of the icons defined for 'verticalMarkerIcon'. This can be used for unfilled icons.
   final Color? iconBackgroundColor;
 
-  /// Whether shaded areas between the defined markerlines should be shown or not. If true, he shaded area will be in the same color as the markerline.
+  /// Whether shaded areas between the defined markerlines should be shown or not. If true, the shaded area will have the same color as the markerline.
   final bool? fillMarkerLines;
 
   /// Determines the stroke width of the inner grid of the chart.
@@ -141,21 +141,17 @@ class AnimatedLineChart extends StatefulWidget {
   _AnimatedLineChartState createState() => _AnimatedLineChartState();
 }
 
-class _AnimatedLineChartState extends State<AnimatedLineChart>
-    with SingleTickerProviderStateMixin {
+class _AnimatedLineChartState extends State<AnimatedLineChart> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   Animation? _animation;
 
   @override
   void initState() {
-    _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 700));
 
-    Animation curve =
-        CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    Animation curve = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
-    _animation =
-        Tween(begin: 0.0, end: 1.0).animate(curve as Animation<double>);
+    _animation = Tween(begin: 0.0, end: 1.0).animate(curve as Animation<double>);
 
     _controller.forward();
 
@@ -179,10 +175,8 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints constraints) {
-                    widget.chart.initialize(constraints.maxWidth,
-                        constraints.maxHeight, widget.textStyle);
+                  child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                    widget.chart.initialize(constraints.maxWidth, constraints.maxHeight, widget.textStyle);
                     return _GestureWrapper(
                       widget.chart,
                       _animation,
@@ -199,8 +193,7 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                       fillMarkerLines: widget.fillMarkerLines,
                       innerGridStrokeWidth: widget.innerGridStrokeWidth,
                       filledMarkerLinesValues: widget.filledMarkerLinesValues,
-                      legendsRightLandscapeMode:
-                          widget.legendsRightLandscapeMode,
+                      legendsRightLandscapeMode: widget.legendsRightLandscapeMode,
                       useLineColorsInTooltip: widget.useLineColorsInTooltip,
                       showMinutesInTooltip: widget.showMinutesInTooltip,
                     );
@@ -215,8 +208,7 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                         children: widget.legends!.map((legend) {
                           assertLegends();
                           return Padding(
-                            padding: const EdgeInsets.only(
-                                right: 4.0, top: 5, left: 4.0),
+                            padding: const EdgeInsets.only(right: 4.0, top: 5, left: 4.0),
                             child: legend,
                           );
                         }).toList()),
@@ -227,10 +219,8 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
           : Column(
               children: [
                 Expanded(
-                  child: LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints constraints) {
-                    widget.chart.initialize(constraints.maxWidth,
-                        constraints.maxHeight, widget.textStyle);
+                  child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                    widget.chart.initialize(constraints.maxWidth, constraints.maxHeight, widget.textStyle);
                     return _GestureWrapper(
                       widget.chart,
                       _animation,
@@ -264,12 +254,7 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(
-                                  right: 4.0,
-                                  top: widget.chart.showMonthsName == true
-                                      ? 15
-                                      : 5,
-                                  left: 4.0),
+                              padding: EdgeInsets.only(right: 4.0, top: widget.chart.showMonthsName == true ? 15 : 5, left: 4.0),
                               child: legend,
                             ),
                           ],
@@ -282,12 +267,8 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
   }
 
   void assertLegends() {
-    assert(widget.legends!.length ==
-            widget.chart.lines.where((line) => line.isMarkerLine).length ||
-        widget.legends!.length ==
-            widget.chart.lines
-                .where((line) => line.isMarkerLine == false)
-                .length ||
+    assert(widget.legends!.length == widget.chart.lines.where((line) => line.isMarkerLine).length ||
+        widget.legends!.length == widget.chart.lines.where((line) => line.isMarkerLine == false).length ||
         widget.legends!.length == widget.chart.lines.length);
   }
 }
@@ -514,8 +495,7 @@ class ChartPainter extends CustomPainter {
   TapText? tapText;
   final TextStyle? style;
 
-  static final TapText _defaultTapText =
-      (prefix, y, unit) => '$prefix: ${y.toStringAsFixed(1)} $unit';
+  static final TapText _defaultTapText = (prefix, y, unit) => '$prefix: ${y.toStringAsFixed(1)} $unit';
 
   ChartPainter(
     this._progress,
@@ -552,10 +532,7 @@ class ChartPainter extends CustomPainter {
     _drawLines(size, canvas);
     _drawAxisValues(canvas, size);
 
-    if (showMarkerLines! &&
-        fillMarkerLines! &&
-        filledMarkerLinesValues != null &&
-        filledMarkerLinesValues!.isNotEmpty) {
+    if (showMarkerLines! && fillMarkerLines! && filledMarkerLinesValues != null && filledMarkerLinesValues!.isNotEmpty) {
       _drawShadedAreaBetweenLines(size, canvas);
     }
 
@@ -572,27 +549,22 @@ class ChartPainter extends CustomPainter {
     }
   }
 
-  var brightness =
-      SchedulerBinding.instance.platformDispatcher.platformBrightness;
+  var brightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
 
   void _drawHighlights(Size size, Canvas canvas, Color onTapLineColor) {
     _linePainter.color = onTapLineColor;
 
-    if (_horizontalDragPosition > LineChart.axisOffsetPX &&
-        _horizontalDragPosition < size.width) {
+    if (_horizontalDragPosition > LineChart.axisOffsetPX && _horizontalDragPosition < size.width) {
       canvas.drawLine(
           Offset(_horizontalDragPosition, 0),
           Offset(_horizontalDragPosition, size.height - LineChart.axisOffsetPX),
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 2
-            ..color = brightness == Brightness.dark
-                ? Colors.grey
-                : _gridPainter.color);
+            ..color = brightness == Brightness.dark ? Colors.grey : _gridPainter.color);
     }
 
-    List<HighlightPoint> highlights =
-        _chart.getClosetHighlightPoints(_horizontalDragPosition);
+    List<HighlightPoint> highlights = _chart.getClosetHighlightPoints(_horizontalDragPosition);
 
     List<TextPainter> textPainters = [];
     int index = 0;
@@ -611,40 +583,27 @@ class ChartPainter extends CustomPainter {
 
     highlights.forEach((highlight) {
       if (!_chart.lines[index].isMarkerLine) {
-        canvas.drawCircle(
-            Offset(highlight.chartPoint.x, highlight.chartPoint.y),
-            5,
-            _linePainter);
+        canvas.drawCircle(Offset(highlight.chartPoint.x, highlight.chartPoint.y), 5, _linePainter);
       }
 
       String prefix = '';
 
       if (highlight.chartPoint is DateTimeChartPoint) {
-        DateTimeChartPoint dateTimeChartPoint =
-            highlight.chartPoint as DateTimeChartPoint;
+        DateTimeChartPoint dateTimeChartPoint = highlight.chartPoint as DateTimeChartPoint;
         prefix = showMinutesInTooltip!
             ? _formatMonthDayHoursMinutes.format(dateTimeChartPoint.dateTime)
             : _formatMonthDayYear.format(dateTimeChartPoint.dateTime);
       }
 
       TextSpan span = TextSpan(
-          style: style?.copyWith(
-                  color: useLineColorsInTooltip == true
-                      ? _chart.lines[index].color
-                      : null) ??
-              TextStyle(
-                  color: useLineColorsInTooltip == true
-                      ? _chart.lines[index].color
-                      : null),
+          style: style?.copyWith(color: useLineColorsInTooltip == true ? _chart.lines[index].color : null) ??
+              TextStyle(color: useLineColorsInTooltip == true ? _chart.lines[index].color : null),
           text: tapText!(
             prefix,
             highlight.yValue,
             _chart.lines[index].unit,
           ));
-      TextPainter tp = TextPainter(
-          text: span,
-          textAlign: TextAlign.right,
-          textDirection: TextDirectionHelper.getDirection());
+      TextPainter tp = TextPainter(text: span, textAlign: TextAlign.right, textDirection: TextDirectionHelper.getDirection());
 
       tp.layout();
 
@@ -652,8 +611,7 @@ class ChartPainter extends CustomPainter {
         maxWidth = tp.width;
       }
 
-      if (!_chart.lines[index]
-          .isMarkerLine) // do not show markerline values in highlight box
+      if (!_chart.lines[index].isMarkerLine) // do not show markerline values in highlight box
       {
         textPainters.add(tp);
       }
@@ -669,15 +627,12 @@ class ChartPainter extends CustomPainter {
       minHighlightX -= 34;
     }
 
-    if (minHighlightY + tooltipHeight >
-        size.height - _chart.axisOffSetWithPadding!) {
-      minHighlightY =
-          size.height - _chart.axisOffSetWithPadding! - tooltipHeight;
+    if (minHighlightY + tooltipHeight > size.height - _chart.axisOffSetWithPadding!) {
+      minHighlightY = size.height - _chart.axisOffSetWithPadding! - tooltipHeight;
     }
 
     //Draw highlight bordered box:
-    Rect tooltipRect = Rect.fromLTWH(
-        minHighlightX - 5, minHighlightY - 5, maxWidth + 20, tooltipHeight);
+    Rect tooltipRect = Rect.fromLTWH(minHighlightX - 5, minHighlightY - 5, maxWidth + 20, tooltipHeight);
     canvas.drawRect(tooltipRect, _tooltipPainter);
     canvas.drawRect(tooltipRect, _gridPainter);
 
@@ -694,13 +649,8 @@ class ChartPainter extends CustomPainter {
     //Draw main axis, should always be available:
     for (int c = 0; c <= (_stepCount + 1); c++) {
       TextPainter tp = _chart.yAxisTexts(0)![c];
-      tp.paint(
-          canvas,
-          Offset(
-              _chart.axisOffSetWithPadding! - tp.width,
-              (size.height - 6) -
-                  (c * _chart.heightStepSize!) -
-                  LineChart.axisOffsetPX));
+      tp.paint(canvas,
+          Offset(_chart.axisOffSetWithPadding! - tp.width, (size.height - 6) - (c * _chart.heightStepSize!) - LineChart.axisOffsetPX));
     }
 
     if (_chart.yAxisCount == 2) {
@@ -708,11 +658,8 @@ class ChartPainter extends CustomPainter {
         TextPainter tp = _chart.yAxisTexts(1)![c];
         tp.paint(
             canvas,
-            Offset(
-                LineChart.axisMargin + size.width - _chart.xAxisOffsetPXright,
-                (size.height - 6) -
-                    (c * _chart.heightStepSize!) -
-                    LineChart.axisOffsetPX));
+            Offset(LineChart.axisMargin + size.width - _chart.xAxisOffsetPXright,
+                (size.height - 6) - (c * _chart.heightStepSize!) - LineChart.axisOffsetPX));
       }
     }
 
@@ -722,11 +669,9 @@ class ChartPainter extends CustomPainter {
           ? _chart.axisOffSetWithPadding! + (c * _chart.widthStepSize! - 20)
           : _chart.axisOffSetWithPadding! + (c * _chart.widthStepSize!);
 
-      double angleRotationInRadians =
-          _chart.showMonthsName == true ? pi * 1.62 : pi * 1.5;
+      double angleRotationInRadians = _chart.showMonthsName == true ? pi * 1.62 : pi * 1.5;
 
-      _drawRotatedText(canvas, _chart.xAxisTexts![c], x,
-          size.height - (LineChart.axisOffsetPX - 5), angleRotationInRadians);
+      _drawRotatedText(canvas, _chart.xAxisTexts![c], x, size.height - (LineChart.axisOffsetPX - 5), angleRotationInRadians);
     }
   }
 
@@ -746,24 +691,20 @@ class ChartPainter extends CustomPainter {
       bool drawCircles = points.length < 100;
 
       if (_progress < 1.0) {
-        path = AnimatedPathUtil.createAnimatedPath(
-            _chart.getPathCache(index)!, _progress);
+        path = AnimatedPathUtil.createAnimatedPath(_chart.getPathCache(index)!, _progress);
       } else {
         path = _chart.getPathCache(index);
         if (!chartLine.isMarkerLine) {
           points.forEach((p) {
             if (p.chartPoint is DateTimeChartPoint) {
-              DateTimeChartPoint dateTimeChartPoint =
-                  p.chartPoint as DateTimeChartPoint;
-              if (this.verticalMarker != null &&
-                  this.verticalMarker!.isNotEmpty) {
+              DateTimeChartPoint dateTimeChartPoint = p.chartPoint as DateTimeChartPoint;
+              if (this.verticalMarker != null && this.verticalMarker!.isNotEmpty) {
                 _setVerticalMarkerChartPoints(dateTimeChartPoint);
               }
             }
 
             if (drawCircles) {
-              canvas.drawCircle(
-                  Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter);
+              canvas.drawCircle(Offset(p.chartPoint.x, p.chartPoint.y), 2, _linePainter);
             }
           });
         }
@@ -789,17 +730,14 @@ class ChartPainter extends CustomPainter {
         if (areaLineChart.gradients != null) {
           Pair<Color, Color> gradient = areaLineChart.gradients![index];
 
-          _fillPainter.shader = LinearGradient(stops: [
-            0.0,
-            0.6
-          ], colors: [
-            gradient.left.withAlpha((220 * _progress).round()),
-            gradient.right.withAlpha((220 * _progress).round())
-          ], begin: Alignment.bottomCenter, end: Alignment.topCenter)
+          _fillPainter.shader = LinearGradient(
+                  stops: [0.0, 0.6],
+                  colors: [gradient.left.withAlpha((220 * _progress).round()), gradient.right.withAlpha((220 * _progress).round())],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter)
               .createShader(Rect.fromLTWH(0, 0, size.width, size.height));
         } else {
-          _fillPainter.color =
-              chartLine.color.withAlpha((200 * _progress).round());
+          _fillPainter.color = chartLine.color.withAlpha((200 * _progress).round());
         }
 
         Path areaPathCache = areaLineChart.getAreaPathCache(index)!;
@@ -813,24 +751,19 @@ class ChartPainter extends CustomPainter {
 
   void _setVerticalMarkerChartPoints(DateTimeChartPoint dateTimeChartPoint) {
     List<DateTime>? verticalMarkers = this.verticalMarker;
-    if (verticalMarkers!.isNotEmpty &&
-        dateTimeChartPoint.dateTime.difference(verticalMarkers.first) <
-            Duration(minutes: 1)) {
+    if (verticalMarkers!.isNotEmpty && dateTimeChartPoint.dateTime.difference(verticalMarkers.first) < Duration(minutes: 1)) {
       firstVerticalMarkerX = dateTimeChartPoint.x;
       firstVerticalMarkerY = dateTimeChartPoint.y;
     }
 
-    if (verticalMarkers.length == 2 &&
-        dateTimeChartPoint.dateTime.difference(verticalMarkers.last) <
-            Duration(minutes: 1)) {
+    if (verticalMarkers.length == 2 && dateTimeChartPoint.dateTime.difference(verticalMarkers.last) < Duration(minutes: 1)) {
       lastVerticalMarkerX = dateTimeChartPoint.x;
       lastVerticalMarkerY = dateTimeChartPoint.y;
     }
   }
 
   void _drawShadedAreaBetweenLines(Size size, Canvas canvas) {
-    assert(filledMarkerLinesValues!.length ==
-        _chart.lines.where((line) => line.isMarkerLine).length);
+    assert(filledMarkerLinesValues!.length == _chart.lines.where((line) => line.isMarkerLine).length);
 
     List values = [];
 
@@ -850,8 +783,7 @@ class ChartPainter extends CustomPainter {
     List<Tuple3> sortedList = [];
 
     for (int i = 0; i < distinctValues.length; i++) {
-      sortedList.add(Tuple3(filledMarkerLinesValues![i], distinctValues[i],
-          _chart.lines[i + 1].color));
+      sortedList.add(Tuple3(filledMarkerLinesValues![i], distinctValues[i], _chart.lines[i + 1].color));
     }
 
     sortedList.sort((a, b) => a.middle.compareTo(b.middle));
@@ -870,8 +802,7 @@ class ChartPainter extends CustomPainter {
               Offset(_chart.xAxisOffsetPX, sortedList[i].middle),
               Offset(
                   size.width,
-                  sortedList[i].middle == distinctValues.last ||
-                          sortedList[i] == sortedList.last
+                  sortedList[i].middle == distinctValues.last || sortedList[i] == sortedList.last
                       ? size.height - LineChart.axisOffsetPX
                       : sortedList[i + 1].middle),
             ),
@@ -894,9 +825,7 @@ class ChartPainter extends CustomPainter {
     bool loaded = firstVerticalMarkerX > 0;
     if (loaded) {
       canvas.drawLine(
-          Offset(firstVerticalMarker, 0),
-          Offset(firstVerticalMarker, size.height - LineChart.axisOffsetPX),
-          verticalMarkerPaint);
+          Offset(firstVerticalMarker, 0), Offset(firstVerticalMarker, size.height - LineChart.axisOffsetPX), verticalMarkerPaint);
 
       if (verticalMarkerIcon != null && verticalMarkerIcon!.isNotEmpty) {
         assert(verticalMarkerIcon!.length == verticalMarker!.length);
@@ -941,8 +870,7 @@ class ChartPainter extends CustomPainter {
 
         canvas.drawLine(
             Offset(lastVerticalMarker - 2, 0),
-            Offset(
-                lastVerticalMarker - 2, size.height - LineChart.axisOffsetPX),
+            Offset(lastVerticalMarker - 2, size.height - LineChart.axisOffsetPX),
             Paint()
               ..color = Colors.grey
               ..strokeWidth = 1);
@@ -951,10 +879,8 @@ class ChartPainter extends CustomPainter {
 
         filledPath.moveTo(firstVerticalMarker, 0);
         filledPath.lineTo(lastVerticalMarker, 0);
-        filledPath.lineTo(
-            lastVerticalMarker, size.height - LineChart.axisOffsetPX);
-        filledPath.lineTo(
-            firstVerticalMarker, size.height - LineChart.axisOffsetPX);
+        filledPath.lineTo(lastVerticalMarker, size.height - LineChart.axisOffsetPX);
+        filledPath.lineTo(firstVerticalMarker, size.height - LineChart.axisOffsetPX);
 
         canvas.drawPath(
           filledPath,
@@ -1002,12 +928,8 @@ class ChartPainter extends CustomPainter {
 
   void _drawUnits(Canvas canvas, Size size, TextStyle? style) {
     if (_chart.indexToUnit.isNotEmpty) {
-      TextSpan span = TextSpan(
-          style: style, text: _chart.yAxisName ?? _chart.indexToUnit[0]);
-      TextPainter tp = TextPainter(
-          text: span,
-          textAlign: TextAlign.right,
-          textDirection: TextDirectionHelper.getDirection());
+      TextSpan span = TextSpan(style: style, text: _chart.yAxisName ?? _chart.indexToUnit[0]);
+      TextPainter tp = TextPainter(text: span, textAlign: TextAlign.right, textDirection: TextDirectionHelper.getDirection());
       tp.layout();
 
       tp.paint(canvas, Offset(_chart.xAxisOffsetPX, -20)); //-16
@@ -1015,42 +937,32 @@ class ChartPainter extends CustomPainter {
 
     if (_chart.indexToUnit.length == 2) {
       TextSpan span = TextSpan(style: style, text: _chart.indexToUnit[1]);
-      TextPainter tp = TextPainter(
-          text: span,
-          textAlign: TextAlign.right,
-          textDirection: TextDirectionHelper.getDirection());
+      TextPainter tp = TextPainter(text: span, textAlign: TextAlign.right, textDirection: TextDirectionHelper.getDirection());
       tp.layout();
 
-      tp.paint(canvas,
-          Offset(size.width - tp.width - _chart.xAxisOffsetPXright, -16));
+      tp.paint(canvas, Offset(size.width - tp.width - _chart.xAxisOffsetPXright, -16));
     }
   }
 
   void _drawGrid(Canvas canvas, Size size) {
     canvas.drawRect(
         Rect.fromLTWH(
-            _chart.xAxisOffsetPX,
-            0,
-            size.width - _chart.xAxisOffsetPX - _chart.xAxisOffsetPXright,
-            size.height - LineChart.axisOffsetPX),
+            _chart.xAxisOffsetPX, 0, size.width - _chart.xAxisOffsetPX - _chart.xAxisOffsetPXright, size.height - LineChart.axisOffsetPX),
         _gridPainter..strokeWidth = 1);
 
     for (double c = 1; c <= _stepCount; c++) {
       canvas.drawLine(
           Offset(_chart.xAxisOffsetPX, c * _chart.heightStepSize!),
-          Offset(size.width - _chart.xAxisOffsetPXright,
-              c * _chart.heightStepSize!),
+          Offset(size.width - _chart.xAxisOffsetPXright, c * _chart.heightStepSize!),
           _gridPainter..strokeWidth = innerGridStrokeWidth ?? 1);
       canvas.drawLine(
           Offset(c * _chart.widthStepSize! + _chart.xAxisOffsetPX, 0),
-          Offset(c * _chart.widthStepSize! + _chart.xAxisOffsetPX,
-              size.height - LineChart.axisOffsetPX),
+          Offset(c * _chart.widthStepSize! + _chart.xAxisOffsetPX, size.height - LineChart.axisOffsetPX),
           _gridPainter..strokeWidth = innerGridStrokeWidth ?? 1);
     }
   }
 
-  void _drawRotatedText(Canvas canvas, TextPainter tp, double x, double y,
-      double angleRotationInRadians) {
+  void _drawRotatedText(Canvas canvas, TextPainter tp, double x, double y, double angleRotationInRadians) {
     canvas.save();
     canvas.translate(x, y + tp.width);
 
