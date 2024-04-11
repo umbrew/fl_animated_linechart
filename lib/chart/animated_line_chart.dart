@@ -264,8 +264,12 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 4.0, top: 5, left: 4.0),
+                              padding: EdgeInsets.only(
+                                  right: 4.0,
+                                  top: widget.chart.showMonthsName == true
+                                      ? 15
+                                      : 5,
+                                  left: 4.0),
                               child: legend,
                             ),
                           ],
@@ -624,10 +628,14 @@ class ChartPainter extends CustomPainter {
       }
 
       TextSpan span = TextSpan(
-          style: style!.copyWith(
-              color: useLineColorsInTooltip == true
-                  ? _chart.lines[index].color
-                  : null),
+          style: style?.copyWith(
+                  color: useLineColorsInTooltip == true
+                      ? _chart.lines[index].color
+                      : null) ??
+              TextStyle(
+                  color: useLineColorsInTooltip == true
+                      ? _chart.lines[index].color
+                      : null),
           text: tapText!(
             prefix,
             highlight.yValue,
@@ -710,12 +718,15 @@ class ChartPainter extends CustomPainter {
 
     //TODO: calculate and cache
     for (int c = 0; c <= (_stepCount + 1); c++) {
-      _drawRotatedText(
-          canvas,
-          _chart.xAxisTexts![c],
-          _chart.axisOffSetWithPadding! + (c * _chart.widthStepSize!),
-          size.height - (LineChart.axisOffsetPX - 5),
-          pi * 1.5);
+      double x = _chart.showMonthsName == true
+          ? _chart.axisOffSetWithPadding! + (c * _chart.widthStepSize! - 20)
+          : _chart.axisOffSetWithPadding! + (c * _chart.widthStepSize!);
+
+      double angleRotationInRadians =
+          _chart.showMonthsName == true ? pi * 1.62 : pi * 1.5;
+
+      _drawRotatedText(canvas, _chart.xAxisTexts![c], x,
+          size.height - (LineChart.axisOffsetPX - 5), angleRotationInRadians);
     }
   }
 
